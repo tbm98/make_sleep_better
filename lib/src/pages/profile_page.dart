@@ -10,20 +10,40 @@ class ProfilePage extends StatelessWidget {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.assessment),
-              onPressed: (){},
+              onPressed: () {},
             )
           ],
         ),
-        body: Container(
+        body: SizedBox.expand(
           child: Column(
             children: <Widget>[
-              Center(
-                child: Icon(
-                  Icons.account_circle,
-                  size: 100,
+              Flexible(
+                flex: 1,
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 80),
+                      child: Icon(
+                        Icons.account_circle,
+                        size: 100,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    Text('say hi'),
+                    //todo: add controller for how long of one cycle and time for waiting to go to sleep
+                    FractionallySizedBox(widthFactor: 0.3, child: TextField()),
+                    FractionallySizedBox(widthFactor: 0.3, child: TextField()),
+                    RaisedButton(),
+                  ],
                 ),
               ),
-              Text('say hi')
+              Flexible(
+                flex: 1,
+                child: Container(
+                  color: Colors.red,
+                  //todo: add charts ,
+                ),
+              )
             ],
           ),
         ));

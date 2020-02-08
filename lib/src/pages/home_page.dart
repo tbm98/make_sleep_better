@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/notifiers.dart';
+import 'package:make_sleep_better/src/providers/main.dart';
 import 'package:make_sleep_better/src/obj/time_wake_up.dart';
 import 'package:make_sleep_better/src/pages/profile_page.dart';
 import 'package:make_sleep_better/src/supports/dates.dart';
@@ -17,6 +17,9 @@ class _HomePageState extends State<HomePage> {
   RangeValues _rangeValues;
   DateTime _timeSleep;
   Future<List<TimeWakeUp>> _timeWakeUp;
+
+  MainProvider get _mainProvider =>
+      Provider.of<MainProvider>(context, listen: false);
 
   @override
   void initState() {
@@ -56,7 +59,7 @@ class _HomePageState extends State<HomePage> {
     return IconButton(
       icon: Icon(Icons.brightness_3),
       onPressed: () {
-        Provider.of<MainNotifier>(context, listen: false)
+        Provider.of<MainProvider>(context, listen: false)
             .switchBrightnessMode();
       },
     );
@@ -140,17 +143,12 @@ class _HomePageState extends State<HomePage> {
               color: Colors.blue,
             ),
             label: Text(
-              '8:00',
+              _dateSupport.formatWithoutDay(),
             ),
             labelStyle: TextStyle(
                 color: Colors.blue, fontSize: Sizes.getWidth(context) / 17),
             backgroundColor: Colors.blue[50],
-            shadowColor: Colors.red,
           ),
-          IconButton(
-            icon: Icon(Icons.arrow_forward_ios),
-            onPressed: () {},
-          )
         ],
       ),
     );
@@ -170,11 +168,15 @@ class _HomePageState extends State<HomePage> {
                   TimeWakeUp data = timeWakeUps[index];
 
                   return ListTile(
-                    leading: Text(
-                      _dateSupport.format(data.time),
+                    title: Text(
+                      _dateSupport.formatWithDay(data.time),
                       style: TextStyle(fontSize: Sizes.getWidth(context) / 16),
                     ),
-                    trailing: Switch.adaptive(value: false, onChanged: (_) {}),
+                    subtitle: Text(_mainProvider.getSuggest(data.cycle)),
+                    trailing: Icon(
+                      _mainProvider.getIconOfCycle(data.cycle),
+                      color: _mainProvider.getColorOfCycle(data.cycle),
+                    ),
                   );
                 },
                 separatorBuilder: (_, __) {
