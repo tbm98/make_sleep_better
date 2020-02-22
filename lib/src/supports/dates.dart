@@ -18,6 +18,10 @@ class DateSupport {
 //    return DateFormat..format(time);
   }
 
+  String formatWithDMY(DateTime time){
+    return DateFormat('HH:mm, dd-MM-yyyy').format(time);
+  }
+
   List<TimeWakeUp> getTimesWakeUp(
       DateTime sleep, int delayMinutes, double minCycle, double maxCyle) {
     List<TimeWakeUp> times = [];

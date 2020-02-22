@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:make_sleep_better/src/pages/feedback.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../supports/prefs.dart';
@@ -39,37 +40,39 @@ class _ProfilePageState extends State<ProfilePage> {
             )
           ],
         ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.snooze), title: const Text('Not yet rated')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.assessment), title: const Text('Statistical'))
+          ],
+        ),
         body: SizedBox.expand(
           child: Column(
             children: <Widget>[
-              Flexible(
-                flex: 1,
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(top: 80),
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 100,
-                        color: Colors.blue,
+              Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: FractionallySizedBox(
+                      widthFactor: 0.4,
+                      child: FittedBox(
+                        child: Icon(
+                          Icons.account_circle,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
-                    const Text('say hi'),
-                    _buildForm(),
-                    RaisedButton(
-                      onPressed: _formValidate,
-                      child: const Text('Update time'),
-                    ),
-                  ],
-                ),
+                  ),
+                  const Text(
+                    'Have a nice day!',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                  _buildForm(),
+                ],
               ),
-              Flexible(
-                flex: 1,
-                child: Container(
-                  color: Colors.red,
-                  //todo: add charts ,
-                ),
-              )
+              Expanded(child: _buildTimeWakeUpFeedback())
             ],
           ),
         ));
@@ -104,11 +107,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     onChanged: (value) {
                       _delayMinute = int.tryParse(value);
                     },
-                    decoration: const InputDecoration(
-                        labelText:
-                            'Time from lying in bed to sleeping (minute)'),
+                    decoration: InputDecoration(
+                        helperText:
+                            'Time from lying in bed to sleeping (minute)',
+                        suffixIcon: InkWell(
+                            onTap: _formValidate,
+                            child: const Chip(
+                              label: Text('Update time'),
+                            ))),
                     keyboardType: TextInputType.number,
                     validator: _formValidator,
+                    maxLength: 3,
                   )));
         }
       },
@@ -120,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
       return 'Must not be empty!';
     }
     if (int.parse(value) == 0) {
-      return 'unbleliveble, It can\'t set be 0';
+      return 'Unbelievable, It can\'t be zero';
     } else {
       return null;
     }
@@ -151,5 +160,14 @@ class _ProfilePageState extends State<ProfilePage> {
       content: Text('Update time fail :('),
       backgroundColor: Colors.red,
     ));
+  }
+
+  Widget _buildTimeWakeUpFeedback() {
+    return PageView(
+      children: <Widget>[
+        const FeedbackPage(1),
+        const FeedbackPage(2),
+      ],
+    );
   }
 }
