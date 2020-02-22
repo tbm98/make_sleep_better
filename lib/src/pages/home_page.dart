@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/providers/main.dart';
-import 'package:make_sleep_better/src/obj/time_wake_up.dart';
-import 'package:make_sleep_better/src/pages/profile_page.dart';
-import 'package:make_sleep_better/src/supports/dates.dart';
-import 'package:make_sleep_better/src/supports/sizes.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../supports/prefs.dart';
+import '../providers/main.dart';
+import '../obj/time_wake_up.dart';
+import 'profile_page.dart';
+import '../supports/dates.dart';
+import '../supports/sizes.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -16,23 +19,36 @@ class _HomePageState extends State<HomePage> {
   DateSupport _dateSupport;
   RangeValues _rangeValues;
   DateTime _timeSleep;
-  Future<List<TimeWakeUp>> _timeWakeUp;
+  List<TimeWakeUp> _timeWakeUp;
 
   MainProvider get _mainProvider =>
       Provider.of<MainProvider>(context, listen: false);
+
+  TimeOfDay _timeOfDay = TimeOfDay.now();
+
+  Future<int> _delayMinuteFuture;
+  int _delayMinute;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     _dateSupport = DateSupport();
-    _rangeValues = RangeValues(3, 6);
+    _rangeValues = const RangeValues(3, 6);
     _timeSleep = _dateSupport.time;
-    _loadTimeWakeUp();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    _delayMinuteFuture =
+        Provider.of<PrefsSupport>(context, listen: false).getDelayMinute();
   }
 
   void _loadTimeWakeUp() {
     _timeWakeUp = _dateSupport.getTimesWakeUp(
-        _timeSleep, 14, _rangeValues.start, _rangeValues.end);
+        _timeSleep, _delayMinute, _rangeValues.start, _rangeValues.end);
   }
 
   String _labelCycle(double num) {
@@ -42,8 +58,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
-          title: Text('Make Sleep Better'),
+          title: const Text('Make Sleep Better'),
           centerTitle: true,
           leading: _leadingAppbar(),
           actions: _actionAppbars(),
@@ -57,7 +74,15 @@ class _HomePageState extends State<HomePage> {
 
   Widget _leadingAppbar() {
     return IconButton(
-      icon: Icon(Icons.brightness_3),
+      icon: Consumer<MainProvider>(
+        builder: (_, provider, __) {
+          if (provider.darkMode) {
+            return Icon(Icons.brightness_3);
+          } else {
+            return Icon(Icons.brightness_4);
+          }
+        },
+      ),
       onPressed: () {
         Provider.of<MainProvider>(context, listen: false)
             .switchBrightnessMode();
@@ -68,126 +93,246 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _actionAppbars() {
     return [
       IconButton(
-        icon: Icon(Icons.account_circle),
+        icon: Icon(Icons.info),
         onPressed: () {
           Navigator.push(
-              context, CupertinoPageRoute(builder: (_) => ProfilePage()));
+              context, CupertinoPageRoute(builder: (_) => const ProfilePage()));
         },
-      )
+      ),
+      IconButton(
+        icon: Icon(Icons.account_circle),
+        onPressed: () async {
+          await Navigator.push(
+              context, CupertinoPageRoute(builder: (_) => const ProfilePage()));
+          setState(() {
+            _delayMinuteFuture =
+                Provider.of<PrefsSupport>(context, listen: false)
+                    .getDelayMinute();
+          });
+        },
+      ),
     ];
   }
 
-  Container _body(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          _textHeader(context),
-          _timeSetting(context),
-          _listTimeWakeup(context)
-        ],
+  Widget _body(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        _clock(context),
+        _textHeader(context),
+        _timeSetting(context),
+        _listTimeWakeup(context)
+      ],
+    );
+  }
+
+  Widget _clock(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: FractionallySizedBox(
+        widthFactor: 0.6,
+        child: FittedBox(
+          child: Text(
+            _dateSupport.formatTime(_timeOfDay),
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
       ),
     );
   }
 
   Widget _textHeader(BuildContext context) {
-    return Expanded(
+    return const Expanded(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: RichText(
-          text: TextSpan(
-//                      text: 'I am Minh',
-              style: TextStyle(
-                  color: Colors.black, fontSize: Sizes.getWidth(context) / 16),
-              children: [
-                TextSpan(text: 'Nếu bạn đi ngủ vào '),
-                TextSpan(text: '8:00 AM'),
-                TextSpan(text: ', bạn nên thức giấc vào những thời điểm sau: '),
-                TextSpan(text: '11:00 PM'),
-                TextSpan(text: ' '),
-                TextSpan(text: ''),
-                TextSpan(
-                    text:
-                        '(Thức dậy giữa một chu kỳ giấ cngủ khiến bạn cảm thấy mệt mỏi, nhưng khi thức dậy vào lsdlsj')
-              ]),
+        padding: EdgeInsets.all(8),
+        child: Text(
+          'Thức dậy giữa một chu kỳ giấc ngủ khiến bạn cảm thấy mệt mỏi, nhưng khi thức dậy vào những thời điểm thích hợp, bạn sẽ cảm thấy sảng khoái và có 1 ngày làm việc hiệu quả hơn!',
+          style: TextStyle(fontSize: 24),
         ),
       ),
     );
   }
 
   Widget _timeSetting(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-            child: RangeSlider(
-              values: _rangeValues,
-              onChanged: (newValue) {
-                setState(() {
-                  _rangeValues = newValue;
-                  _loadTimeWakeUp();
-                });
-              },
-              min: 1.0,
-              max: 10.0,
-              divisions: 9,
-              labels: RangeLabels(_labelCycle(_rangeValues.start),
-                  _labelCycle(_rangeValues.end)),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: <Widget>[
+        RangeSlider(
+          values: _rangeValues,
+          onChanged: (newValue) {
+            setState(() {
+              _rangeValues = newValue;
+              _loadTimeWakeUp();
+            });
+          },
+          min: 1,
+          max: 10,
+          divisions: 9,
+          labels: RangeLabels(
+              _labelCycle(_rangeValues.start), _labelCycle(_rangeValues.end)),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: <Widget>[
+              Text(
+                _rangeValues.start.toInt().toString(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const Text(' - ', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(_rangeValues.end.toInt().toString(),
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              const Text(' cycles',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Spacer(),
+              IconButton(
+                icon: Icon(
+                  Icons.history,
+                  color: Colors.blue,
+                  size: 36,
+                ),
+                onPressed: () {
+                  _showTimePicker();
+                },
+              ),
+            ],
           ),
-          Chip(
-            avatar: Icon(
-              Icons.history,
-              color: Colors.blue,
-            ),
-            label: Text(
-              _dateSupport.formatWithoutDay(),
-            ),
-            labelStyle: TextStyle(
-                color: Colors.blue, fontSize: Sizes.getWidth(context) / 17),
-            backgroundColor: Colors.blue[50],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _listTimeWakeup(BuildContext context) {
-    return SizedBox(
-      height: Sizes.getHeightNoAppbar(context) * 0.5,
-      child: FutureBuilder(
-        future: _timeWakeUp,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<TimeWakeUp> timeWakeUps = snapshot.data;
+  void _showTimePicker() async {
+    final TimeOfDay timeSelected = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.dark(),
+          child: child,
+        );
+      },
+    );
+    if (timeSelected == null) {
+      return;
+    }
+    _timeOfDay = timeSelected;
+    _timeSleep = DateTime(_timeSleep.year, _timeSleep.month, _timeSleep.day,
+        _timeOfDay.hour, _timeOfDay.minute);
+    _loadTimeWakeUp();
+  }
 
-            return ListView.separated(
+  Widget _listTimeWakeup(BuildContext context) {
+    return FutureBuilder(
+      future: _delayMinuteFuture,
+      builder: (context, snapshot) {
+        if (snapshot.data == null) {
+          return SizedBox(
+            height: Sizes.getHeightNoAppbar(context) * 0.5,
+            child: Center(
+              child: Shimmer.fromColors(
+                baseColor: Colors.red,
+                highlightColor: Colors.yellow,
+                child: Text(
+                  'Loading from data',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          );
+        } else {
+          _delayMinute = snapshot.data;
+          _loadTimeWakeUp();
+          return SizedBox(
+            height: Sizes.getHeightNoAppbar(context) * 0.5,
+            child: ListView.separated(
                 itemBuilder: (context, index) {
-                  TimeWakeUp data = timeWakeUps[index];
+                  final TimeWakeUp data = _timeWakeUp[index];
 
                   return ListTile(
                     title: Text(
                       _dateSupport.formatWithDay(data.time),
                       style: TextStyle(fontSize: Sizes.getWidth(context) / 16),
                     ),
-                    subtitle: Text(_mainProvider.getSuggest(data.cycle)),
-                    trailing: Icon(
-                      _mainProvider.getIconOfCycle(data.cycle),
-                      color: _mainProvider.getColorOfCycle(data.cycle),
+                    subtitle: Text(
+                        _mainProvider.getSuggest(data.cycle, snapshot.data)),
+                    trailing: InkWell(
+                      onTap: () {
+                        _confirmSelectTime(data.time);
+                      },
+                      child: Column(
+                        children: <Widget>[
+                          Icon(
+                            _mainProvider.getIconOfCycle(data.cycle),
+                            color: _mainProvider.getColorOfCycle(data.cycle),
+                          ),
+                          const Text('Select')
+                        ],
+                      ),
                     ),
                   );
                 },
                 separatorBuilder: (_, __) {
-                  return Divider();
+                  return const Divider();
                 },
-                itemCount: timeWakeUps.length);
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
+                itemCount: _timeWakeUp.length),
+          );
+        }
+      },
+    );
+  }
+
+  void _confirmSelectTime(DateTime time) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text(
+              _dateSupport.formatWithDay(time),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 36),
+            ),
+            content: const Text('Do you want to wake up at this time ?'),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              FlatButton(
+                onPressed: () {
+                  _handleWhenConfirmSelected(time);
+                },
+                child: Text(
+                  'Yes',
+                  style: TextStyle(color: Colors.green),
+                ),
+              )
+            ],
+          );
+        });
+  }
+
+  void _handleWhenConfirmSelected(DateTime time) {
+    Navigator.pop(context);
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      duration: const Duration(minutes: 1),
+      content:
+          Text('Let\'s set the alarm at ${_dateSupport.formatWithDay(time)}'),
+      action: SnackBarAction(
+        label: 'Yes, I will do it',
+        onPressed: () {
+          _scaffoldKey.currentState.hideCurrentSnackBar();
         },
       ),
-    );
+    ));
+    _mainProvider.addData(time);
   }
 }
