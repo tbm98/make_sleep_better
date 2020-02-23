@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:make_sleep_better/src/obj/data.dart';
 import 'package:make_sleep_better/src/pages/delay_animation.dart';
@@ -61,6 +62,18 @@ class _StatisticPageState extends State<StatisticPage> {
   List<Data> _listDataWakeUp;
   final Map<int, DataForHour> _dataByHour = {};
   int _total, _unsatisfied = 0, _normal = 0, _satisfied = 0;
+  final List<String> _titleCounter = [
+    'Total',
+    'Unsatisfied',
+    'Normal',
+    'Satisfied'
+  ];
+  final List<Color> _colorCounter = [
+    Colors.green,
+    Colors.red,
+    Colors.grey,
+    Colors.blue
+  ];
 
   @override
   void initState() {
@@ -143,15 +156,26 @@ class _StatisticPageState extends State<StatisticPage> {
                 delay: 250,
                 child: Row(
                   children: <Widget>[
-                    Expanded(child: TileCounter(Colors.green, _total, 'Total')),
                     Expanded(
                         child: TileCounter(
-                            Colors.red, _unsatisfied, 'Unsatisfied')),
+                            Colors.green, _total, _titleCounter[0], () {
+                      _showListStatistic(0);
+                    })),
                     Expanded(
-                        child: TileCounter(Colors.grey, _normal, 'Normal')),
+                        child: TileCounter(
+                            Colors.red, _unsatisfied, _titleCounter[1], () {
+                      _showListStatistic(1);
+                    })),
                     Expanded(
-                        child:
-                            TileCounter(Colors.blue, _satisfied, 'Satisfied')),
+                        child: TileCounter(
+                            Colors.grey, _normal, _titleCounter[2], () {
+                      _showListStatistic(2);
+                    })),
+                    Expanded(
+                        child: TileCounter(
+                            Colors.blue, _satisfied, _titleCounter[3], () {
+                      _showListStatistic(3);
+                    })),
                   ],
                 ),
               );
@@ -160,6 +184,54 @@ class _StatisticPageState extends State<StatisticPage> {
         ),
       ],
     );
+  }
+
+  void _showListStatistic(int index) {
+    List<Data> _listData = List.from(_listDataWakeUp);
+    if (index != 0) {
+      _listData.removeWhere((data) => data.level != index);
+    }
+    print('length is ${_listData.length}');
+    showDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text(
+              _titleCounter[index],
+              style: TextStyle(color: _colorCounter[index], fontSize: 36),
+            ),
+            content: Container(
+              height: 300,
+              child: ListView.builder(
+                  itemCount: _listData.length,
+                  itemBuilder: (context, id) {
+                    final data = _listData[id];
+                    return Material(
+                      color: Colors.transparent,
+                      child: ListTile(
+                        title: Text(
+                            _dateSupport.formatHHmmWithDay(data.timeWakeUp)),
+                        subtitle: Text(_dateSupport.formatDMY(data.timeWakeUp)),
+                        trailing: _getTrailingStatistic(index, data.level),
+                      ),
+                    );
+                  }),
+            ),
+          );
+        });
+  }
+
+  Widget _getTrailingStatistic(int index, int level) {
+    if (index == 0) {
+      return Text(
+        _titleCounter[level],
+        style: TextStyle(
+          color: _colorCounter[level],
+        ),
+      );
+    } else {
+      return null;
+    }
   }
 
   Widget _buildStatisticByTime() {
@@ -287,11 +359,12 @@ class _StatisticPageState extends State<StatisticPage> {
 }
 
 class TileCounter extends StatelessWidget {
-  const TileCounter(this.color, this.number, this.name);
+  const TileCounter(this.color, this.number, this.name, this.showDialog);
 
   final Color color;
   final int number;
   final String name;
+  final VoidCallback showDialog;
 
   @override
   Widget build(BuildContext context) {
@@ -300,18 +373,21 @@ class TileCounter extends StatelessWidget {
         child: Card(
           shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(16))),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Text(
-                number.toString(),
-                style: TextStyle(fontSize: 36, color: color),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(name),
-              ),
-            ],
+          child: InkWell(
+            onTap: showDialog,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Text(
+                  number.toString(),
+                  style: TextStyle(fontSize: 36, color: color),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(name),
+                ),
+              ],
+            ),
           ),
         ));
   }

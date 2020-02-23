@@ -109,6 +109,18 @@ class _FeedbackPageState extends State<FeedbackPage> {
             content: const Text('How do you feel ?'),
             actions: <Widget>[
               FlatButton(
+                onPressed: () => _rating(4, index),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(Icons.delete_forever, color: Colors.red),
+                    const Text(' My mistake. remove it',
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+              FlatButton(
                 onPressed: () => _rating(1, index),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -159,10 +171,15 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   void _rating(int level, int index) async {
     Navigator.pop(context);
-    _listDataWakeUp[index].feedback = true;
-    _listDataWakeUp[index].level = level;
-    await _fileStore.updateData(_listDataWakeUp[index]);
-    _listDataWakeUpFuture = _getListWakeUpNotYetRated();
+    if (level != 4) {
+      _listDataWakeUp[index].feedback = true;
+      _listDataWakeUp[index].level = level;
+      await _fileStore.updateData(_listDataWakeUp[index]);
+      _listDataWakeUpFuture = _getListWakeUpNotYetRated();
+    } else {
+      await _fileStore.removeData(_listDataWakeUp[index]);
+      _listDataWakeUpFuture = _getListWakeUpNotYetRated();
+    }
     setState(() {});
   }
 }
