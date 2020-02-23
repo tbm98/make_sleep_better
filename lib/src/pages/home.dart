@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:make_sleep_better/src/pages/delay_animation.dart';
+import 'package:make_sleep_better/src/pages/info.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -96,7 +98,7 @@ class _HomePageState extends State<HomePage> {
         icon: Icon(Icons.info),
         onPressed: () {
           Navigator.push(
-              context, CupertinoPageRoute(builder: (_) => const ProfilePage()));
+              context, CupertinoPageRoute(builder: (_) => const InfoPage()));
         },
       ),
       IconButton(
@@ -145,8 +147,9 @@ class _HomePageState extends State<HomePage> {
       child: Padding(
         padding: EdgeInsets.all(8),
         child: Text(
-          'Thức dậy giữa một chu kỳ giấc ngủ khiến bạn cảm thấy mệt mỏi, nhưng khi thức dậy vào những thời điểm thích hợp, bạn sẽ cảm thấy sảng khoái và có 1 ngày làm việc hiệu quả hơn!',
+          'Do you ever go to bed ridiculously early because you need to wake up on time for work - then feel even more tired in the morning?',
           style: TextStyle(fontSize: 24),
+          textAlign: TextAlign.center,
         ),
       ),
     );
@@ -246,39 +249,42 @@ class _HomePageState extends State<HomePage> {
         } else {
           _delayMinute = snapshot.data;
           _loadTimeWakeUp();
-          return SizedBox(
-            height: Sizes.getHeightNoAppbar(context) * 0.5,
-            child: ListView.separated(
-                itemBuilder: (context, index) {
-                  final TimeWakeUp data = _timeWakeUp[index];
+          return DelayedAnimation(
+            delay: 150,
+            child: SizedBox(
+              height: Sizes.getHeightNoAppbar(context) * 0.5,
+              child: ListView.separated(
+                  itemBuilder: (context, index) {
+                    final TimeWakeUp data = _timeWakeUp[index];
 
-                  return ListTile(
-                    title: Text(
-                      _dateSupport.formatHHmmWithDay(data.time),
-                      style: TextStyle(fontSize: Sizes.getWidth(context) / 16),
-                    ),
-                    subtitle: Text(
-                        _mainProvider.getSuggest(data.cycle, snapshot.data)),
-                    trailing: InkWell(
-                      onTap: () {
-                        _confirmSelectTime(data.time);
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          Icon(
-                            _mainProvider.getIconOfCycle(data.cycle),
-                            color: _mainProvider.getColorOfCycle(data.cycle),
-                          ),
-                          const Text('Select')
-                        ],
+                    return ListTile(
+                      title: Text(
+                        _dateSupport.formatHHmmWithDay(data.time),
+                        style: TextStyle(fontSize: Sizes.getWidth(context) / 16),
                       ),
-                    ),
-                  );
-                },
-                separatorBuilder: (_, __) {
-                  return const Divider();
-                },
-                itemCount: _timeWakeUp.length),
+                      subtitle: Text(
+                          _mainProvider.getSuggest(data.cycle, snapshot.data)),
+                      trailing: InkWell(
+                        onTap: () {
+                          _confirmSelectTime(data.time);
+                        },
+                        child: Column(
+                          children: <Widget>[
+                            Icon(
+                              _mainProvider.getIconOfCycle(data.cycle),
+                              color: _mainProvider.getColorOfCycle(data.cycle),
+                            ),
+                            const Text('Select')
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (_, __) {
+                    return const Divider();
+                  },
+                  itemCount: _timeWakeUp.length),
+            ),
           );
         }
       },
