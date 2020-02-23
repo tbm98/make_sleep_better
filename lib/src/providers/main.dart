@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import '../supports/file_store.dart';
@@ -44,25 +45,7 @@ class MainProvider extends ChangeNotifier {
         '${Strings.time_cycle[cycle - 1]} + ${delayMinute}p';
   }
 
-  void addData(DateTime time) async {
-    final data = Data(timeWakeUp: time, feedback: false, level: 0);
-    final String readData = await _fileStore.readData();
-    List<Data> listData;
-    if (readData.isEmpty) {
-      //make a new list<data> and encode to json then write to filestore
-      listData = [data];
-    } else {
-      //if not empty, must read data=>convert to listdata=>add new data
-      // =>encode to json=> write to filestore
-
-      final listDataFromFile = jsonDecode(readData) as List;
-      listData = listDataFromFile.map((e) => Data.fromMap(e)).toList();
-      listData.add(data);
-//      print(listData);
-    }
-
-    final String result = jsonEncode(listData);
-//    print('write data to file:$result');
-    await _fileStore.writeData(result);
+  Future<File> addData(DateTime time) async {
+    return await _fileStore.addData(time);
   }
 }

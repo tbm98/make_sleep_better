@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/supports/dates.dart';
+
+import '../obj/data.dart';
+import '../supports/dates.dart';
+import '../supports/file_store.dart';
 
 class FeedbackPage extends StatefulWidget {
-  const FeedbackPage(this.index);
-
-  final int index;
+  const FeedbackPage();
 
   @override
   _FeedbackPageState createState() => _FeedbackPageState();
@@ -13,22 +16,69 @@ class FeedbackPage extends StatefulWidget {
 
 class _FeedbackPageState extends State<FeedbackPage> {
   DateSupport _dateSupport;
+  FileStore _fileStore;
+  Future<List<Data>> _listDataWakeUpFuture;
+  List<Data> _listDataWakeUp;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _dateSupport = DateSupport();
+    _fileStore = const FileStore();
+    _listDataWakeUpFuture = _getListWakeUpNotYetRated();
   }
+
+  Future<List<Data>> _getListWakeUpNotYetRated() async {
+    final String readFromFile = await _fileStore.readData();
+    final listDataFromFile = jsonDecode(readFromFile) as List;
+    _listDataWakeUp = listDataFromFile.map((e) => Data.fromMap(e)).toList()
+      ..removeWhere((element) => element.feedback);
+    return _listDataWakeUp ?? [];
+  }
+
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _listDataWakeUpFuture,
+      builder: (context, snapshot) {
+        if (snapshot.data == null) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          if (_listDataWakeUp.isEmpty) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 36),
+                child: Text(
+                  'You\'ve finished your sleep, go to the statistics page'
+                  ' to see how effective it is.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          } else {
+            return _buildListWakeUp();
+          }
+        }
+      },
+    );
+  }
+
+  Widget _buildListWakeUp() {
     return ListView.builder(
-        itemCount: 10,
+        itemCount: _listDataWakeUp.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text('20:20'),
+            title: Text(
+              _dateSupport.formatHHmmWithDay(_listDataWakeUp[index].timeWakeUp),
+              style: const TextStyle(fontSize: 24),
+            ),
+            subtitle:
+                Text(_dateSupport.formatDMY(_listDataWakeUp[index].timeWakeUp)),
             trailing: InkWell(
-                onTap: () => _confirmRating(DateTime.now()),
+                onTap: () =>
+                    _confirmRating(_listDataWakeUp[index].timeWakeUp, index),
                 child: const Padding(
                   padding: EdgeInsets.all(8),
                   child: Text(
@@ -41,16 +91,17 @@ class _FeedbackPageState extends State<FeedbackPage> {
         });
   }
 
-  void _confirmRating(DateTime time) {
+  void _confirmRating(DateTime time, int index) {
     showDialog(
         context: context,
         builder: (context) {
           return CupertinoAlertDialog(
-            title: Text('You woke up at ${_dateSupport.formatWithDMY(time)}'),
+            title:
+                Text('You woke up at ${_dateSupport.formatWithDayDMY(time)}'),
             content: const Text('How do you feel ?'),
             actions: <Widget>[
               FlatButton(
-                onPressed: () {},
+                onPressed: () => _rating(1, index),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -67,7 +118,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 ),
               ),
               FlatButton(
-                onPressed: () {},
+                onPressed: () => _rating(2, index),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -78,7 +129,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 ),
               ),
               FlatButton(
-                onPressed: () {},
+                onPressed: () => _rating(3, index),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -92,5 +143,14 @@ class _FeedbackPageState extends State<FeedbackPage> {
             ],
           );
         });
+  }
+
+  void _rating(int level, int index) async {
+    Navigator.pop(context);
+    _listDataWakeUp[index].feedback = true;
+    _listDataWakeUp[index].level = level;
+    await _fileStore.updateData(_listDataWakeUp);
+    _listDataWakeUpFuture = _getListWakeUpNotYetRated();
+    setState(() {});
   }
 }
