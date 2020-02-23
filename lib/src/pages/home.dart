@@ -6,7 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import '../supports/prefs.dart';
 import '../providers/main.dart';
 import '../obj/time_wake_up.dart';
-import 'profile_page.dart';
+import 'profile.dart';
 import '../supports/dates.dart';
 import '../supports/sizes.dart';
 
@@ -254,7 +254,7 @@ class _HomePageState extends State<HomePage> {
 
                   return ListTile(
                     title: Text(
-                      _dateSupport.formatWithDay(data.time),
+                      _dateSupport.formatHHmmWithDay(data.time),
                       style: TextStyle(fontSize: Sizes.getWidth(context) / 16),
                     ),
                     subtitle: Text(
@@ -291,7 +291,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context) {
           return CupertinoAlertDialog(
             title: Text(
-              _dateSupport.formatWithDay(time),
+              _dateSupport.formatHHmmWithDay(time),
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 36),
             ),
             content: const Text('Do you want to wake up at this time ?'),
@@ -325,7 +325,7 @@ class _HomePageState extends State<HomePage> {
       behavior: SnackBarBehavior.floating,
       duration: const Duration(minutes: 1),
       content:
-          Text('Let\'s set the alarm at ${_dateSupport.formatWithDay(time)}'),
+          Text('Let\'s set the alarm at ${_dateSupport.formatHHmmWithDay(time)}'),
       action: SnackBarAction(
         label: 'Yes, I will do it',
         onPressed: () {

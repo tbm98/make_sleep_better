@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:make_sleep_better/src/pages/feedback.dart';
+import 'package:make_sleep_better/src/pages/statistic.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../supports/prefs.dart';
@@ -164,9 +165,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildTimeWakeUpFeedback() {
     return PageView(
-      children: <Widget>[
-        const FeedbackPage(1),
-        const FeedbackPage(2),
+      children: const <Widget>[
+        FeedbackPage(),
+        StatisticPage(),
       ],
     );
   }

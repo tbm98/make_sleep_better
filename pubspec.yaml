@@ -27,7 +27,7 @@ dependencies:
   provider: ^4.0.4
 #  firebase_database: ^3.1.1
   shared_preferences: ^0.5.6+2
-  syncfusion_flutter_charts: ^17.4.46
+  syncfusion_flutter_charts: ^17.4.43
   animations: ^1.0.0+5
   path_provider: ^1.6.1
   shimmer: ^1.0.1
