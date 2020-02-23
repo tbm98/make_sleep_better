@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:make_sleep_better/src/obj/data.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../obj/data.dart';
 
 class FileStore {
   const FileStore();
@@ -28,7 +29,8 @@ class FileStore {
   }
 
   Future<String> readData() async {
-    await Future.delayed(Duration(seconds: 1));
+    // await delay for app look like smooth
+//    await Future.delayed(const Duration(milliseconds: 500));
     try {
       final file = await _localFile;
 
@@ -43,7 +45,9 @@ class FileStore {
   }
 
   Future<List<Data>> readDataToList() async {
-    await Future.delayed(Duration(seconds: 1));
+    // await delay for app look like smooth
+
+//    await Future.delayed(const Duration(milliseconds: 500));
 
     final String readDataFromFile = await readData();
     List<Data> listData;

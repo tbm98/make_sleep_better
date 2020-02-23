@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:make_sleep_better/src/pages/delay_animation.dart';
 
 import '../obj/data.dart';
 import '../supports/dates.dart';
@@ -47,13 +48,16 @@ class _FeedbackPageState extends State<FeedbackPage> {
           );
         } else {
           if (_listDataWakeUp.isEmpty) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 36),
-                child: Text(
-                  'You\'ve finished your sleep, go to the statistics page'
-                  ' to see how effective it is.',
-                  textAlign: TextAlign.center,
+            return const DelayedAnimation(
+              delay: 300,
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 36),
+                  child: Text(
+                    'You\'ve finished your sleep, go to the statistics page'
+                    ' to see how effective it is.',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             );
@@ -66,29 +70,32 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   Widget _buildListWakeUp() {
-    return ListView.builder(
-        itemCount: _listDataWakeUp.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(
-              _dateSupport.formatHHmmWithDay(_listDataWakeUp[index].timeWakeUp),
-              style: const TextStyle(fontSize: 24),
-            ),
-            subtitle:
-                Text(_dateSupport.formatDMY(_listDataWakeUp[index].timeWakeUp)),
-            trailing: InkWell(
-                onTap: () =>
-                    _confirmRating(_listDataWakeUp[index].timeWakeUp, index),
-                child: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    'Vote',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue),
-                  ),
-                )),
-          );
-        });
+    return DelayedAnimation(
+      delay: 250,
+      child: ListView.builder(
+          itemCount: _listDataWakeUp.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(
+                _dateSupport.formatHHmmWithDay(_listDataWakeUp[index].timeWakeUp),
+                style: const TextStyle(fontSize: 24),
+              ),
+              subtitle:
+                  Text(_dateSupport.formatDMY(_listDataWakeUp[index].timeWakeUp)),
+              trailing: InkWell(
+                  onTap: () =>
+                      _confirmRating(_listDataWakeUp[index].timeWakeUp, index),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      'Vote',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                  )),
+            );
+          }),
+    );
   }
 
   void _confirmRating(DateTime time, int index) {

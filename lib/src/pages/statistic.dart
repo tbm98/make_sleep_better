@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:make_sleep_better/src/obj/data.dart';
+import 'package:make_sleep_better/src/pages/delay_animation.dart';
 import 'package:make_sleep_better/src/supports/dates.dart';
 import 'package:make_sleep_better/src/supports/file_store.dart';
 import 'package:make_sleep_better/src/supports/sizes.dart';
@@ -138,16 +139,19 @@ class _StatisticPageState extends State<StatisticPage> {
                 ),
               );
             } else {
-              return Row(
-                children: <Widget>[
-                  Expanded(child: TileCounter(Colors.green, _total, 'Total')),
-                  Expanded(
-                      child:
-                          TileCounter(Colors.red, _unsatisfied, 'Unsatisfied')),
-                  Expanded(child: TileCounter(Colors.grey, _normal, 'Normal')),
-                  Expanded(
-                      child: TileCounter(Colors.blue, _satisfied, 'Satisfied')),
-                ],
+              return DelayedAnimation(
+                delay: 250,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(child: TileCounter(Colors.green, _total, 'Total')),
+                    Expanded(
+                        child:
+                            TileCounter(Colors.red, _unsatisfied, 'Unsatisfied')),
+                    Expanded(child: TileCounter(Colors.grey, _normal, 'Normal')),
+                    Expanded(
+                        child: TileCounter(Colors.blue, _satisfied, 'Satisfied')),
+                  ],
+                ),
               );
             }
           },
@@ -181,19 +185,20 @@ class _StatisticPageState extends State<StatisticPage> {
           return Shimmer.fromColors(
               baseColor: Colors.red,
               highlightColor: Colors.yellow,
-              child: SizedBox(
-                height: height,
-                width: height,
-                child: Text('hi'),
+              child: const Center(
+                child: Text('Loading data ...'),
               ));
         } else {
-          return Container(
-            height: height,
-            child: Row(
-              children: <Widget>[
-                _tileLeftChart(),
-                Expanded(child: _listChart()),
-              ],
+          return DelayedAnimation(
+            delay: 300,
+            child: Container(
+              height: height,
+              child: Row(
+                children: <Widget>[
+                  _tileLeftChart(),
+                  Expanded(child: _listChart()),
+                ],
+              ),
             ),
           );
         }
