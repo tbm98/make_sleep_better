@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:make_sleep_better/src/pages/delay_animation.dart';
 import 'package:make_sleep_better/src/pages/feedback.dart';
 import 'package:make_sleep_better/src/pages/statistic.dart';
+import 'package:make_sleep_better/src/providers/main.dart';
 import 'package:make_sleep_better/src/supports/dates.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -47,6 +48,23 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           title: const Text('Profile setting'),
           centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Consumer<MainProvider>(
+                builder: (_, provider, __) {
+                  if (provider.darkMode) {
+                    return Icon(Icons.brightness_3);
+                  } else {
+                    return Icon(Icons.brightness_4);
+                  }
+                },
+              ),
+              onPressed: () {
+                Provider.of<MainProvider>(context, listen: false)
+                    .switchBrightnessMode();
+              },
+            )
+          ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _indexPage,
@@ -165,8 +183,11 @@ class _ProfilePageState extends State<ProfilePage> {
   void _updateTimeSuccess() {
     _scaffoldKey.currentState.showSnackBar(const SnackBar(
       behavior: SnackBarBehavior.floating,
-      content: Text('Update time success ^_^'),
-      backgroundColor: Colors.green,
+      content: Text(
+        'Update time success ^_^',
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Colors.blue,
     ));
   }
 

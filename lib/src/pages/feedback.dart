@@ -77,11 +77,12 @@ class _FeedbackPageState extends State<FeedbackPage> {
           itemBuilder: (context, index) {
             return ListTile(
               title: Text(
-                _dateSupport.formatHHmmWithDay(_listDataWakeUp[index].timeWakeUp),
+                _dateSupport
+                    .formatHHmmWithDay(_listDataWakeUp[index].timeWakeUp),
                 style: const TextStyle(fontSize: 24),
               ),
-              subtitle:
-                  Text(_dateSupport.formatDMY(_listDataWakeUp[index].timeWakeUp)),
+              subtitle: Text(
+                  _dateSupport.formatDMY(_listDataWakeUp[index].timeWakeUp)),
               trailing: InkWell(
                   onTap: () =>
                       _confirmRating(_listDataWakeUp[index].timeWakeUp, index),
@@ -129,9 +130,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Icon(Icons.sentiment_neutral),
+                    Icon(
+                      Icons.sentiment_neutral,
+                      color: Colors.grey,
+                    ),
                     const Text(' Normal',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.grey)),
                   ],
                 ),
               ),

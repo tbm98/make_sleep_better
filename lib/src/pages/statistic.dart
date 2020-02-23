@@ -145,11 +145,13 @@ class _StatisticPageState extends State<StatisticPage> {
                   children: <Widget>[
                     Expanded(child: TileCounter(Colors.green, _total, 'Total')),
                     Expanded(
-                        child:
-                            TileCounter(Colors.red, _unsatisfied, 'Unsatisfied')),
-                    Expanded(child: TileCounter(Colors.grey, _normal, 'Normal')),
+                        child: TileCounter(
+                            Colors.red, _unsatisfied, 'Unsatisfied')),
                     Expanded(
-                        child: TileCounter(Colors.blue, _satisfied, 'Satisfied')),
+                        child: TileCounter(Colors.grey, _normal, 'Normal')),
+                    Expanded(
+                        child:
+                            TileCounter(Colors.blue, _satisfied, 'Satisfied')),
                   ],
                 ),
               );
