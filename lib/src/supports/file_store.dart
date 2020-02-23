@@ -100,4 +100,11 @@ class FileStore {
 //    print('write data to file:$result');
     return await writeData(result);
   }
+
+  Future<File> removeData(Data data) async {
+    var listData = await readDataToList();
+    listData = listData..removeWhere((dt) => dt.id == data.id);
+    final String result = jsonEncode(listData);
+    return await writeData(result);
+  }
 }

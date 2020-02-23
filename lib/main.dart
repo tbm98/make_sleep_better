@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
         print('rebuild material app');
 
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Flutter Dem',
           theme: ThemeData(
               primarySwatch: Colors.blue,
