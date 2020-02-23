@@ -9,17 +9,22 @@ class DateSupport {
 
   DateTime time;
 
-  String formatWithoutDay() {
+  String formatHHmm([DateTime time]) {
+    time ??= this.time;
     return DateFormat('HH:mm').format(time);
   }
 
-  String formatWithDay(DateTime time) {
+  String formatHHmmWithDay(DateTime time) {
     return DateFormat('HH:mm, E').format(time);
 //    return DateFormat..format(time);
   }
 
-  String formatWithDMY(DateTime time){
+  String formatWithDayDMY(DateTime time) {
     return DateFormat('HH:mm, dd-MM-yyyy').format(time);
+  }
+
+  String formatDMY(DateTime time) {
+    return DateFormat('dd-MM-yyyy').format(time);
   }
 
   List<TimeWakeUp> getTimesWakeUp(
