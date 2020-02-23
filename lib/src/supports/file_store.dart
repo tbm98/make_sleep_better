@@ -28,6 +28,7 @@ class FileStore {
   }
 
   Future<String> readData() async {
+    await Future.delayed(Duration(seconds: 1));
     try {
       final file = await _localFile;
 
@@ -41,8 +42,29 @@ class FileStore {
     }
   }
 
+  Future<List<Data>> readDataToList() async {
+    await Future.delayed(Duration(seconds: 1));
+
+    final String readDataFromFile = await readData();
+    List<Data> listData;
+    if (readDataFromFile.isEmpty) {
+      //make a new list<data> and encode to json then write to filestore
+      listData = [];
+    } else {
+      //if not empty, must read data=>convert to listdata=>add new data
+      // =>encode to json=> write to filestore
+      final listDataFromFile = jsonDecode(readDataFromFile) as List;
+      listData = listDataFromFile.map((e) => Data.fromMap(e)).toList();
+    }
+    return listData;
+  }
+
   Future<File> addData(DateTime time) async {
-    final data = Data(timeWakeUp: time, feedback: false, level: 0);
+    final data = Data(
+        id: time.millisecondsSinceEpoch,
+        timeWakeUp: time,
+        feedback: false,
+        level: 0);
     final String readDataFromFile = await readData();
     List<Data> listData;
     if (readDataFromFile.isEmpty) {
@@ -63,8 +85,14 @@ class FileStore {
     return await writeData(result);
   }
 
-  Future<File> updateData(List<Data> datas) async{
-    final String result = jsonEncode(datas);
+  Future<File> updateData(Data data) async {
+    final listData = await readDataToList();
+    for (int i = 0; i < listData.length; i++) {
+      if (listData[i].id == data.id) {
+        listData[i] = data;
+      }
+    }
+    final String result = jsonEncode(listData);
 //    print('write data to file:$result');
     return await writeData(result);
   }

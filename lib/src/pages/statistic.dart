@@ -1,8 +1,50 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:make_sleep_better/src/obj/data.dart';
 import 'package:make_sleep_better/src/supports/dates.dart';
 import 'package:make_sleep_better/src/supports/file_store.dart';
 import 'package:make_sleep_better/src/supports/sizes.dart';
+import 'package:shimmer/shimmer.dart';
+
+class DataForHour {
+  int unsatisfied = 0, normal = 0, satisfied = 0;
+
+  int get sum => unsatisfied + normal + satisfied;
+
+  double get level {
+    if (sum == 0) {
+      return 0;
+    }
+    return (unsatisfied * -1 + normal * 0 + satisfied * 1) / sum;
+  }
+
+  double get unpt {
+    if (sum == 0) {
+      return 0;
+    }
+    return unsatisfied / sum;
+  }
+
+  double get nopt {
+    if (sum == 0) {
+      return 0;
+    }
+    return normal / sum;
+  }
+
+  double get sapt {
+    if (sum == 0) {
+      return 0;
+    }
+    return satisfied / sum;
+  }
+
+  @override
+  String toString() {
+    return '$unsatisfied;$normal;$satisfied;$level';
+  }
+}
 
 class StatisticPage extends StatefulWidget {
   const StatisticPage();
@@ -16,20 +58,50 @@ class _StatisticPageState extends State<StatisticPage> {
   FileStore _fileStore;
   Future<List<Data>> _listDataWakeUpFuture;
   List<Data> _listDataWakeUp;
+  final Map<int, DataForHour> _dataByHour = {};
+  int _total, _unsatisfied = 0, _normal = 0, _satisfied = 0;
 
   @override
   void initState() {
     super.initState();
     _dateSupport = DateSupport();
     _fileStore = const FileStore();
-//    _listDataWakeUpFuture = _getListWakeUpNotYetRated();
+    for (int i = 0; i < 24; i++) {
+      _dataByHour[i] = DataForHour();
+    }
+    _listDataWakeUpFuture = _getListWakeUp();
+  }
+
+  Future<List<Data>> _getListWakeUp() async {
+    final String readFromFile = await _fileStore.readData();
+    final listDataFromFile = jsonDecode(readFromFile) as List;
+    _listDataWakeUp = listDataFromFile.map((e) => Data.fromMap(e)).toList()
+      ..removeWhere((element) => element.feedback == false);
+    _total = _listDataWakeUp.length;
+
+    for (final data in _listDataWakeUp) {
+      if (data.level == 1) {
+        _unsatisfied++;
+        _dataByHour[data.timeWakeUp.hour].unsatisfied++;
+      }
+      if (data.level == 2) {
+        _normal++;
+        _dataByHour[data.timeWakeUp.hour].normal++;
+      }
+      if (data.level == 3) {
+        _satisfied++;
+        _dataByHour[data.timeWakeUp.hour].satisfied++;
+      }
+    }
+    for (int i = 0; i < 24; i++) {
+      print('$i = ${_dataByHour[i]}');
+    }
+    return _listDataWakeUp ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
     return ListView(
-      shrinkWrap: true,
-      physics: ClampingScrollPhysics(),
       children: <Widget>[
         _buildStatisticCounter(),
         _buildStatisticByTime(),
@@ -48,17 +120,37 @@ class _StatisticPageState extends State<StatisticPage> {
             style: TextStyle(fontSize: 20),
           ),
         ),
-        Row(
-          children: <Widget>[
-            Expanded(
-                child: TileCounter(Colors.green, 20, 'Total')),
-            Expanded(
-                child: TileCounter(Colors.red, 20, 'Unsatisfied')),
-            Expanded(
-                child: TileCounter(Colors.grey, 20, 'Normal')),
-            Expanded(
-                child: TileCounter(Colors.blue, 20, 'Satisfied')),
-          ],
+        FutureBuilder(
+          future: _listDataWakeUpFuture,
+          builder: (context, snapshot) {
+            if (snapshot.data == null) {
+              return SizedBox(
+                child: Shimmer.fromColors(
+                  baseColor: Colors.red,
+                  highlightColor: Colors.yellow,
+                  child: Text(
+                    'Loading from data...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return Row(
+                children: <Widget>[
+                  Expanded(child: TileCounter(Colors.green, _total, 'Total')),
+                  Expanded(
+                      child:
+                          TileCounter(Colors.red, _unsatisfied, 'Unsatisfied')),
+                  Expanded(child: TileCounter(Colors.grey, _normal, 'Normal')),
+                  Expanded(
+                      child: TileCounter(Colors.blue, _satisfied, 'Satisfied')),
+                ],
+              );
+            }
+          },
         ),
       ],
     );
@@ -81,54 +173,109 @@ class _StatisticPageState extends State<StatisticPage> {
   }
 
   Widget _buildListStatisticByTime() {
-    final double height = Sizes.getHeightNoAppbar(context) * 0.25;
-    return Container(
-      height: height,
-      child: Row(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  width: 20,
-                  decoration: BoxDecoration(
-                      color: Colors.pink,
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                          colors: [Colors.blue, Colors.grey, Colors.red],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter)),
-                ),
-              ),
-              const Text('Hour')
-            ],
-          ),
-          Expanded(
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 24,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Flexible(
-                            child:
-                                LayoutBuilder(builder: (context, constrains) {
-                              final _height = constrains.maxHeight;
-                              return LineChart(
-                                  _height / (index % 3 + 1), 100, 50, 20);
-                            }),
-                          ),
-                          Text((index + 1).toString())
-                        ],
-                      ),
-                    );
-                  })),
-        ],
-      ),
+    final double height = Sizes.getHeightNoAppbar(context) * 0.4;
+    return FutureBuilder(
+      future: _listDataWakeUpFuture,
+      builder: (context, snapshot) {
+        if (snapshot.data == null) {
+          return Shimmer.fromColors(
+              baseColor: Colors.red,
+              highlightColor: Colors.yellow,
+              child: SizedBox(
+                height: height,
+                width: height,
+                child: Text('hi'),
+              ));
+        } else {
+          return Container(
+            height: height,
+            child: Row(
+              children: <Widget>[
+                _tileLeftChart(),
+                Expanded(child: _listChart()),
+              ],
+            ),
+          );
+        }
+      },
     );
+  }
+
+  Widget _tileLeftChart() {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            width: 20,
+            decoration: BoxDecoration(
+                color: Colors.pink,
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                    colors: [Colors.blue, Colors.grey, Colors.red],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter)),
+          ),
+        ),
+        const Text('Hour')
+      ],
+    );
+  }
+
+  Widget _listChart() {
+    return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 24,
+        itemBuilder: (context, index) {
+          final DataForHour data = _dataByHour[index];
+          return Padding(
+            padding: index == 23
+                ? const EdgeInsets.only(left: 16, right: 16)
+                : const EdgeInsets.only(left: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Flexible(
+                  child: LayoutBuilder(builder: (context, constrains) {
+                    final _height = constrains.maxHeight / 2;
+                    return _typeLineChart(_height, data);
+                  }),
+                ),
+                Text((index).toString())
+              ],
+            ),
+          );
+        });
+  }
+
+  Widget _typeLineChart(double height, DataForHour data) {
+    if (data.level > 0) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Flexible(flex: 1, child: LineChart(height * data.level.abs(), data)),
+          Flexible(
+              flex: 1,
+              child: SizedBox(
+                height: height,
+              )),
+        ],
+      );
+    } else if (data.level < 0) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Flexible(
+              flex: 1,
+              child: SizedBox(
+                height: height,
+              )),
+          Flexible(flex: 1, child: LineChart(height * data.level.abs(), data)),
+        ],
+      );
+    } else {
+      return Container(
+          alignment: Alignment.center, child: Text(data.sum.toString()));
+    }
   }
 }
 
@@ -164,45 +311,59 @@ class TileCounter extends StatelessWidget {
 }
 
 class LineChart extends StatelessWidget {
-  const LineChart(this.height, this.a, this.b, this.c);
+  const LineChart(this.maxHeight, this.data);
 
-  final double height;
-  final int a, b, c;
-
-  int get sum => a + b + c;
-
-  double get apt => a / sum * 100;
-
-  double get bpt => b / sum * 100;
-
-  double get cpt => c / sum * 100;
+  final double maxHeight;
+  final DataForHour data;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(5),
       child: Container(
-        height: height,
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: apt * height / 100,
-              width: 20,
-              color: Colors.blue,
-            ),
-            Container(
-              height: bpt * height / 100,
-              width: 20,
-              color: Colors.grey,
-            ),
-            Container(
-              height: cpt * height / 100,
-              width: 20,
-              color: Colors.red,
-            ),
-          ],
-        ),
+        height: maxHeight,
+        child: Column(children: _getLine()),
       ),
     );
+  }
+
+  List<Widget> _getLine() {
+    if (data.level < 0) {
+      return [
+        Container(
+          height: data.sapt * maxHeight,
+          width: 10,
+          color: Colors.blue,
+        ),
+        Container(
+          height: data.nopt * maxHeight,
+          width: 10,
+          color: Colors.grey,
+        ),
+        Container(
+          height: data.unpt * maxHeight,
+          width: 10,
+          color: Colors.red,
+        ),
+      ];
+    } else if (data.level > 0) {
+      return [
+        Container(
+          height: data.unpt * maxHeight,
+          width: 10,
+          color: Colors.red,
+        ),
+        Container(
+          height: data.nopt * maxHeight,
+          width: 10,
+          color: Colors.grey,
+        ),
+        Container(
+          height: data.sapt * maxHeight,
+          width: 10,
+          color: Colors.blue,
+        ),
+      ];
+    }
   }
 }

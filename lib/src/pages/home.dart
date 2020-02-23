@@ -232,7 +232,7 @@ class _HomePageState extends State<HomePage> {
               child: Shimmer.fromColors(
                 baseColor: Colors.red,
                 highlightColor: Colors.yellow,
-                child: Text(
+                child: const Text(
                   'Loading from data',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -324,8 +324,8 @@ class _HomePageState extends State<HomePage> {
     _scaffoldKey.currentState.showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
       duration: const Duration(minutes: 1),
-      content:
-          Text('Let\'s set the alarm at ${_dateSupport.formatHHmmWithDay(time)}'),
+      content: Text(
+          'Let\'s set the alarm at ${_dateSupport.formatHHmmWithDay(time)}'),
       action: SnackBarAction(
         label: 'Yes, I will do it',
         onPressed: () {

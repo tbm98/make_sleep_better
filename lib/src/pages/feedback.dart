@@ -149,7 +149,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     Navigator.pop(context);
     _listDataWakeUp[index].feedback = true;
     _listDataWakeUp[index].level = level;
-    await _fileStore.updateData(_listDataWakeUp);
+    await _fileStore.updateData(_listDataWakeUp[index]);
     _listDataWakeUpFuture = _getListWakeUpNotYetRated();
     setState(() {});
   }
