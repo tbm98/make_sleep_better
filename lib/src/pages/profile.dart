@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:make_sleep_better/src/obj/data.dart';
 import 'package:make_sleep_better/src/pages/delay_animation.dart';
 import 'package:make_sleep_better/src/pages/feedback.dart';
 import 'package:make_sleep_better/src/pages/statistic.dart';
 import 'package:make_sleep_better/src/providers/main.dart';
 import 'package:make_sleep_better/src/supports/dates.dart';
+import 'package:make_sleep_better/src/supports/file_store.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../supports/prefs.dart';
@@ -25,12 +29,30 @@ class _ProfilePageState extends State<ProfilePage> {
   TimeOfDay _timeOfDay = TimeOfDay.now();
   int _indexPage = 0;
   final _pageController = PageController(initialPage: 0);
+  FileStore _fileStore;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _dateSupport = DateSupport();
+    _fileStore = const FileStore();
+    _getListWakeUpNotYetRated();
+  }
+
+  Future<void> _getListWakeUpNotYetRated() async {
+    final String readFromFile = await _fileStore.readData();
+    final listDataFromFile = jsonDecode(readFromFile) as List;
+    final _listDataWakeUp = listDataFromFile
+        .map((e) => Data.fromMap(e))
+        .toList()
+          ..removeWhere((element) => element.feedback);
+    if (_listDataWakeUp.isEmpty) {
+      await Future.delayed(const Duration(milliseconds: 1000));
+      await _pageController.animateToPage(1,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOutQuart);
+    }
   }
 
   @override
