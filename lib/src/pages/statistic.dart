@@ -3,8 +3,6 @@ import 'package:make_sleep_better/src/obj/data.dart';
 import 'package:make_sleep_better/src/supports/dates.dart';
 import 'package:make_sleep_better/src/supports/file_store.dart';
 import 'package:make_sleep_better/src/supports/sizes.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'dart:math';
 
 class StatisticPage extends StatefulWidget {
   const StatisticPage();
@@ -53,85 +51,13 @@ class _StatisticPageState extends State<StatisticPage> {
         Row(
           children: <Widget>[
             Expanded(
-                child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Card(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(16))),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            '20',
-                            style: TextStyle(fontSize: 36, color: Colors.green),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: Text('Total'),
-                          ),
-                        ],
-                      ),
-                    ))),
+                child: TileCounter(Colors.green, 20, 'Total')),
             Expanded(
-                child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Card(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(16))),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            '20',
-                            style: TextStyle(fontSize: 36, color: Colors.red),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: Text('Unsatisfied'),
-                          ),
-                        ],
-                      ),
-                    ))),
+                child: TileCounter(Colors.red, 20, 'Unsatisfied')),
             Expanded(
-                child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Card(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(16))),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            '20',
-                            style: TextStyle(fontSize: 36, color: Colors.grey),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: Text('Normal'),
-                          ),
-                        ],
-                      ),
-                    ))),
+                child: TileCounter(Colors.grey, 20, 'Normal')),
             Expanded(
-                child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Card(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(16))),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            '20',
-                            style: TextStyle(fontSize: 36, color: Colors.blue),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: Text('Satisfied'),
-                          ),
-                        ],
-                      ),
-                    ))),
+                child: TileCounter(Colors.blue, 20, 'Satisfied')),
           ],
         ),
       ],
@@ -203,6 +129,37 @@ class _StatisticPageState extends State<StatisticPage> {
         ],
       ),
     );
+  }
+}
+
+class TileCounter extends StatelessWidget {
+  const TileCounter(this.color, this.number, this.name);
+
+  final Color color;
+  final int number;
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+        aspectRatio: 1,
+        child: Card(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16))),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Text(
+                number.toString(),
+                style: TextStyle(fontSize: 36, color: color),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(name),
+              ),
+            ],
+          ),
+        ));
   }
 }
 
