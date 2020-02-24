@@ -42,7 +42,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     _delayMinuteFuture =
         Provider.of<PrefsSupport>(context, listen: false).getDelayMinute();
@@ -148,7 +147,6 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.all(8),
         child: Text(
           'Do you ever go to bed ridiculously early because you need to wake up on time for work - then feel even more tired in the morning?',
-          style: TextStyle(fontSize: 24),
           textAlign: TextAlign.center,
         ),
       ),
