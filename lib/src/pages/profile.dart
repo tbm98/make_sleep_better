@@ -30,10 +30,10 @@ class _ProfilePageState extends State<ProfilePage> {
   int _indexPage = 0;
   final _pageController = PageController(initialPage: 0);
   FileStore _fileStore;
+  final _focusNode = FocusNode();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _dateSupport = DateSupport();
     _fileStore = const FileStore();
@@ -154,26 +154,35 @@ class _ProfilePageState extends State<ProfilePage> {
           return DelayedAnimation(
             delay: 200,
             child: FractionallySizedBox(
-                widthFactor: 0.8,
+                widthFactor: 0.9,
                 child: Form(
                     key: _formKey,
-                    child: TextFormField(
-                      initialValue: snapshot.data.toString(),
-                      onChanged: (value) {
-                        _delayMinute = int.tryParse(value);
-                      },
-                      decoration: InputDecoration(
-                          helperText:
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextFormField(
+                            focusNode: _focusNode,
+                            initialValue: snapshot.data.toString(),
+                            onChanged: (value) {
+                              _delayMinute = int.tryParse(value);
+                            },
+                            decoration: const InputDecoration(
+                              helperText:
                               'Time from lying in bed to sleeping (minute)',
-                          suffixIcon: InkWell(
-                              onTap: _formValidate,
-                              child: const Chip(
-                                label: Text('Update time'),
-                              ))),
-                      keyboardType: TextInputType.number,
-                      validator: _formValidator,
-                      maxLength: 3,
-                    ))),
+                            ),
+                            keyboardType: TextInputType.number,
+                            validator: _formValidator,
+                            maxLength: 3,
+                          ),
+                        ),
+                        InkWell(
+                            onTap: _formValidate,
+                            child: const Chip(
+                              label: Text('Update'),
+                            ))
+                      ],
+                    ))
+            ),
           );
         }
       },
@@ -193,6 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _formValidate() async {
     if (_formKey.currentState.validate()) {
+      FocusScope.of(_formKey.currentContext).unfocus();
       final bool success = await _prefsSupport.saveDelayMinute(_delayMinute);
       if (success) {
         _updateTimeSuccess();
