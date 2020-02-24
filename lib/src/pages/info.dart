@@ -77,13 +77,17 @@ class _InfoPageState extends State<InfoPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const Text(
-                    'A mobile developer loves flutter.',
+                    'A mobile developer ',
                     textAlign: TextAlign.center,
                   ),
                   Icon(
                     Icons.favorite,
                     color: Colors.pink,
-                  )
+                  ),
+                  const Text(
+                    ' flutter.',
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
               _title('# Source code'),

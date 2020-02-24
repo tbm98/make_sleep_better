@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
         .toList()
           ..removeWhere((element) => element.feedback);
     if (_listDataWakeUp.isEmpty) {
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 2000));
       await _pageController.animateToPage(1,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOutQuart);
