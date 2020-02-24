@@ -142,13 +142,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _textHeader(BuildContext context) {
-    return const Expanded(
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: Text(
-          'Do you ever go to bed ridiculously early because you need to wake up on time for work - then feel even more tired in the morning?',
-          textAlign: TextAlign.center,
-        ),
+    return const Padding(
+      padding: EdgeInsets.all(8),
+      child: Text(
+        'Do you ever go to bed ridiculously early because you need to wake up on time for work - then feel even more tired in the morning?',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 24),
       ),
     );
   }
@@ -223,13 +222,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _listTimeWakeup(BuildContext context) {
-    return FutureBuilder(
-      future: _delayMinuteFuture,
-      builder: (context, snapshot) {
-        if (snapshot.data == null) {
-          return SizedBox(
-            height: Sizes.getHeightNoAppbar(context) * 0.5,
-            child: Center(
+    return Expanded(
+      child: FutureBuilder(
+        future: _delayMinuteFuture,
+        builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            return Center(
               child: Shimmer.fromColors(
                 baseColor: Colors.red,
                 highlightColor: Colors.yellow,
@@ -242,15 +240,12 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-            ),
-          );
-        } else {
-          _delayMinute = snapshot.data;
-          _loadTimeWakeUp();
-          return DelayedAnimation(
-            delay: 150,
-            child: SizedBox(
-              height: Sizes.getHeightNoAppbar(context) * 0.5,
+            );
+          } else {
+            _delayMinute = snapshot.data;
+            _loadTimeWakeUp();
+            return DelayedAnimation(
+              delay: 150,
               child: ListView.separated(
                   itemBuilder: (context, index) {
                     final TimeWakeUp data = _timeWakeUp[index];
@@ -258,7 +253,8 @@ class _HomePageState extends State<HomePage> {
                     return ListTile(
                       title: Text(
                         _dateSupport.formatHHmmWithDay(data.time),
-                        style: TextStyle(fontSize: Sizes.getWidth(context) / 16),
+                        style:
+                            TextStyle(fontSize: Sizes.getWidth(context) / 16),
                       ),
                       subtitle: Text(
                           _mainProvider.getSuggest(data.cycle, snapshot.data)),
@@ -282,10 +278,10 @@ class _HomePageState extends State<HomePage> {
                     return const Divider();
                   },
                   itemCount: _timeWakeUp.length),
-            ),
-          );
-        }
-      },
+            );
+          }
+        },
+      ),
     );
   }
 
