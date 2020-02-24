@@ -31,5 +31,19 @@ void main() {
     final listDynamic = jsonDecode(result) as List;
     print(jsonEncode(
         listDynamic.map((e) => Data.fromMap(e)).toList()..add(data)));
+
+    //test decode empty string
+    try {
+      final a = jsonDecode('') as List;
+      expect(a, null);
+    } catch (e) {
+      expect(e, isNotNull);
+    }
+    try {
+      final a = jsonDecode('[]') as List;
+      expect(a, isNotNull);
+    } catch (e) {
+      expect(e, null);
+    }
   });
 }
