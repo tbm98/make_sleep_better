@@ -37,10 +37,10 @@ class FileStore {
       // Read the file.
       final String contents = await file.readAsString();
 
-      return contents ?? '';
+      return contents ?? '[]';
     } catch (e) {
       // If encountering an error, return 0.
-      return '';
+      return '[]';
     }
   }
 
