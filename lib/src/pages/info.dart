@@ -55,14 +55,14 @@ class _InfoPageState extends State<InfoPage> {
           child: ListView(
             children: <Widget>[
               _title('# What are sleep cycles? (based on mirror.co.uk)'),
-              Text(
+              const Text(
                   '''A sleep cycle lasts about 90 minutes, during which time we move through five stages of sleep - four stages of non-rapid eye movement (NREM) sleep and one stage of rapid eye movement (REM) sleep.
               
   We move from light sleep in Stage 1 to a very deep sleep in Stage 4. It is difficult to wake someone in Stage 4 of a sleep cycle, which is why you might feel more groggy if you wake up during this stage.
 
   The fifth stage, REM sleep, is when most dreaming occurs.'''),
               _title('# Why choose 14 minutes? (based on mirror.co.uk'),
-              Text(
+              const Text(
                   '''The sleep calculator factors in the average of 14 minutes it takes people to naturally fall asleep, so you don\'t necessarily need to be in bed by this time.
                   
   You can adjust it to suit your own needs in profile.'''),
