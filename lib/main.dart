@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Flutter Dem',
+          title: 'Make sleep better',
           theme: ThemeData(
               primarySwatch: Colors.blue,
               brightness: data ? Brightness.dark : Brightness.light),

@@ -168,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             },
                             decoration: const InputDecoration(
                               helperText:
-                              'Time from lying in bed to sleeping (minute)',
+                                  'Time from lying in bed to sleeping (minute)',
                             ),
                             keyboardType: TextInputType.number,
                             validator: _formValidator,
@@ -181,8 +181,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               label: Text('Update'),
                             ))
                       ],
-                    ))
-            ),
+                    ))),
           );
         }
       },

@@ -1,3 +1,4 @@
+import 'package:android_intent/android_intent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:make_sleep_better/src/pages/delay_animation.dart';
@@ -11,6 +12,7 @@ import '../obj/time_wake_up.dart';
 import 'profile.dart';
 import '../supports/dates.dart';
 import '../supports/sizes.dart';
+import 'dart:io' show Platform;
 
 class HomePage extends StatefulWidget {
   @override
@@ -113,6 +115,19 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     ];
+  }
+
+  void _launchClock(int hour, int minutes) async {
+    if (Platform.isAndroid) {
+      final AndroidIntent intent =
+          AndroidIntent(action: 'android.intent.action.SET_ALARM', flags: [
+        0x10000000
+      ], arguments: {
+        'android.intent.extra.alarm.HOUR': hour,
+        'android.intent.extra.alarm.MINUTES': minutes
+      });
+      await intent.launch();
+    }
   }
 
   Widget _body(BuildContext context) {
@@ -327,12 +342,13 @@ class _HomePageState extends State<HomePage> {
       content: Text(
           'Let\'s set the alarm at ${_dateSupport.formatHHmmWithDay(time)}'),
       action: SnackBarAction(
-        label: 'Yes, I will do it',
+        label: 'Yes, I did this.',
         onPressed: () {
           _scaffoldKey.currentState.hideCurrentSnackBar();
         },
       ),
     ));
     _mainProvider.addData(time);
+    _launchClock(time.hour, time.minute);
   }
 }
