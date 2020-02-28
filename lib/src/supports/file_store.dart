@@ -63,10 +63,13 @@ class FileStore {
     return listData;
   }
 
-  Future<File> addData(DateTime time) async {
+  Future<File> addData(DateTime time, DateTime now) async {
+    final totalSleepTime = time.difference(now);
     final data = Data(
         id: time.millisecondsSinceEpoch,
+        timeSleep: now,
         timeWakeUp: time,
+        totalSleepTime: totalSleepTime.inMinutes,
         feedback: false,
         level: 0);
     final String readDataFromFile = await readData();

@@ -1,19 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import '../supports/file_store.dart';
-import '../obj/data.dart';
 import '../supports/strings.dart';
 
 class MainProvider extends ChangeNotifier {
   MainProvider() {
     _fileStore = const FileStore();
-    _testReadFile();
-  }
-
-  void _testReadFile() async {
-    print('data from file: ${await _fileStore.readData()}');
   }
 
   FileStore _fileStore;
@@ -45,7 +38,7 @@ class MainProvider extends ChangeNotifier {
         '${Strings.time_cycle[cycle - 1]} + ${delayMinute}p';
   }
 
-  Future<File> addData(DateTime time) async {
-    return await _fileStore.addData(time);
+  Future<File> addData(DateTime time, DateTime now) async {
+    return await _fileStore.addData(time,now);
   }
 }

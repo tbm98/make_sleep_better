@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:make_sleep_better/src/pages/delay_animation.dart';
 import 'package:make_sleep_better/src/pages/info.dart';
+import 'package:make_sleep_better/src/supports/logs.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -28,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   MainProvider get _mainProvider =>
       Provider.of<MainProvider>(context, listen: false);
 
+  DateTime _now = DateTime.now();
   TimeOfDay _timeOfDay = TimeOfDay.now();
 
   Future<int> _delayMinuteFuture;
@@ -231,6 +235,9 @@ class _HomePageState extends State<HomePage> {
       return;
     }
     _timeOfDay = timeSelected;
+    _now = DateTime(_now.year, _now.month, _now.day, _timeOfDay.hour,
+        _timeOfDay.minute, _now.second, _now.millisecond, _now.microsecond);
+
     _timeSleep = DateTime(_timeSleep.year, _timeSleep.month, _timeSleep.day,
         _timeOfDay.hour, _timeOfDay.minute);
     _loadTimeWakeUp();
@@ -301,6 +308,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _confirmSelectTime(DateTime time) {
+//    logs(time.difference(_now).inMinutes);
     showDialog(
         context: context,
         builder: (context) {
@@ -348,7 +356,8 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     ));
-    _mainProvider.addData(time);
+    _mainProvider.addData(time,_now);
+
     _launchClock(time.hour, time.minute);
   }
 }

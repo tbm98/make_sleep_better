@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 
 class Data {
-  Data({@required this.id, this.timeWakeUp, this.feedback, this.level});
+  Data(
+      {@required this.id,
+      this.timeSleep,
+      this.timeWakeUp,
+      this.totalSleepTime,
+      this.feedback,
+      this.level});
 
   factory Data.fromMap(Map<String, dynamic> map) {
     return Data(
       id: map['id'] as int,
-      timeWakeUp: DateTime.parse(map['timeWakeUp']),
+      timeSleep: DateTime.tryParse(map['timeSleep'] ?? ''),
+      timeWakeUp: DateTime.tryParse(map['timeWakeUp'] ?? ''),
+      totalSleepTime: map['totalSleepTime'] as int,
       feedback: map['feedback'] as bool,
       level: map['level'] as int,
     );
   }
 
   int id;
+  DateTime timeSleep;
   DateTime timeWakeUp;
+  int totalSleepTime;
   bool feedback;
 
   ///level 0: chưa đánh giá
@@ -25,16 +35,9 @@ class Data {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'timeSleep': timeSleep.toString(),
       'timeWakeUp': timeWakeUp.toString(),
-      'feedback': feedback,
-      'level': level,
-    };
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'timeWakeUp': timeWakeUp,
+      'totalSleepTime': totalSleepTime,
       'feedback': feedback,
       'level': level,
     };
