@@ -6,6 +6,7 @@ import 'package:make_sleep_better/src/obj/data.dart';
 import 'package:make_sleep_better/src/pages/delay_animation.dart';
 import 'package:make_sleep_better/src/supports/dates.dart';
 import 'package:make_sleep_better/src/supports/file_store.dart';
+import 'package:make_sleep_better/src/supports/logs.dart';
 import 'package:make_sleep_better/src/supports/sizes.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -115,11 +116,15 @@ class _StatisticPageState extends State<StatisticPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        _buildStatisticCounter(),
-        _buildStatisticByTime(),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          _buildStatisticCounter(),
+          _buildStatisticByTimeSleep(),
+          _buildStatisticByTimeWakeup(),
+          _buildStatisticByTotalTime()
+        ],
+      ),
     );
   }
 
@@ -187,11 +192,11 @@ class _StatisticPageState extends State<StatisticPage> {
   }
 
   void _showListStatistic(int index) {
-    List<Data> _listData = List.from(_listDataWakeUp);
+    final List<Data> _listData = List.from(_listDataWakeUp);
     if (index != 0) {
       _listData.removeWhere((data) => data.level != index);
     }
-    print('length is ${_listData.length}');
+    logs('length is ${_listData.length}');
     showDialog(
         context: context,
         builder: (context) {
@@ -234,23 +239,62 @@ class _StatisticPageState extends State<StatisticPage> {
     }
   }
 
-  Widget _buildStatisticByTime() {
+  Widget _buildStatisticByTimeSleep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         const Padding(
           padding: EdgeInsets.all(8),
           child: Text(
-            'Statistic by time',
+            'Good time to go to sleep',
             style: TextStyle(fontSize: 20),
           ),
         ),
-        _buildListStatisticByTime()
+        _buildListStatisticByTime(1)
       ],
     );
   }
 
-  Widget _buildListStatisticByTime() {
+  Widget _buildStatisticByTimeWakeup() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Padding(
+          padding: EdgeInsets.all(8),
+          child: Text(
+            'Good time to wake up',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        _buildListStatisticByTime(2)
+      ],
+    );
+  }
+
+  Widget _buildStatisticByTotalTime() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Padding(
+          padding: EdgeInsets.all(8),
+          child: Text(
+            'How many hours of sleep is good',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        _buildListStatisticByTime(3)
+      ],
+    );
+  }
+
+  /// int type to return statistic by field
+  ///
+  /// 1: time to sleep
+  ///
+  /// 2: time to wake up
+  ///
+  /// 3: total time for sleep
+  Widget _buildListStatisticByTime(int type) {
     final double height = Sizes.getHeightNoAppbar(context) * 0.4;
     return FutureBuilder(
       future: _listDataWakeUpFuture,
@@ -267,10 +311,11 @@ class _StatisticPageState extends State<StatisticPage> {
             delay: 300,
             child: Container(
               height: height,
+              margin: const EdgeInsets.only(bottom: 16),
               child: Row(
                 children: <Widget>[
                   _tileLeftChart(),
-                  Expanded(child: _listChart()),
+                  Expanded(child: _listChart(type)),
                 ],
               ),
             ),
@@ -288,11 +333,33 @@ class _StatisticPageState extends State<StatisticPage> {
             width: 20,
             decoration: BoxDecoration(
                 color: Colors.pink,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(5),
                 gradient: LinearGradient(
                     colors: [Colors.blue, Colors.grey, Colors.red],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  RotatedBox(
+                    quarterTurns: 1,
+                    child: Text(
+                      'Good',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  RotatedBox(
+                    quarterTurns: 1,
+                    child: Text(
+                      'Bad',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
         const Text('Hour')
@@ -300,7 +367,14 @@ class _StatisticPageState extends State<StatisticPage> {
     );
   }
 
-  Widget _listChart() {
+  /// int type to return statistic by field
+  ///
+  /// 1: time to sleep
+  ///
+  /// 2: time to wake up
+  ///
+  /// 3: total time for sleep
+  Widget _listChart(int type) {
     return ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 24,
@@ -415,17 +489,17 @@ class LineChart extends StatelessWidget {
       return [
         Container(
           height: data.sapt * maxHeight,
-          width: 10,
+          width: 40,
           color: Colors.blue,
         ),
         Container(
           height: data.nopt * maxHeight,
-          width: 10,
+          width: 40,
           color: Colors.grey,
         ),
         Container(
           height: data.unpt * maxHeight,
-          width: 10,
+          width: 40,
           color: Colors.red,
         ),
       ];
@@ -433,20 +507,22 @@ class LineChart extends StatelessWidget {
       return [
         Container(
           height: data.unpt * maxHeight,
-          width: 10,
+          width: 40,
           color: Colors.red,
         ),
         Container(
           height: data.nopt * maxHeight,
-          width: 10,
+          width: 40,
           color: Colors.grey,
         ),
         Container(
           height: data.sapt * maxHeight,
-          width: 10,
+          width: 40,
           color: Colors.blue,
         ),
       ];
+    } else {
+      return null;
     }
   }
 }
