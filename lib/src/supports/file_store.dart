@@ -36,7 +36,8 @@ class FileStore {
 
       // Read the file.
       final String contents = await file.readAsString();
-
+      //fake
+//      return '[{"timeSleep":"null","timeWakeUp":"2020-02-28 14:32:59.471543","cycleSleep":null,"feedback":true,"level":2},{"timeSleep":"null","timeWakeUp":"2020-02-28 14:32:59.471543","cycleSleep":null,"feedback":true,"level":2}]';
       return contents ?? '[]';
     } catch (e) {
       // If encountering an error, return 0.
@@ -51,25 +52,20 @@ class FileStore {
 
     final String readDataFromFile = await readData();
     List<Data> listData;
-    if (readDataFromFile.isEmpty) {
-      //make a new list<data> and encode to json then write to filestore
-      listData = [];
-    } else {
-      //if not empty, must read data=>convert to listdata=>add new data
-      // =>encode to json=> write to filestore
-      final listDataFromFile = jsonDecode(readDataFromFile) as List;
-      listData = listDataFromFile.map((e) => Data.fromMap(e)).toList();
-    }
+
+    //if not empty, must read data=>convert to listdata=>add new data
+    // =>encode to json=> write to filestore
+    final listDataFromFile = jsonDecode(readDataFromFile) as List;
+    listData = listDataFromFile.map((e) => Data.fromMap(e)).toList();
+
     return listData;
   }
 
-  Future<File> addData(DateTime time, DateTime now) async {
-    final totalSleepTime = time.difference(now);
+  Future<File> addData(DateTime time, DateTime now,int cycle) async {
     final data = Data(
-        id: time.millisecondsSinceEpoch,
         timeSleep: now,
         timeWakeUp: time,
-        totalSleepTime: totalSleepTime.inMinutes,
+        cycleSleep: cycle,
         feedback: false,
         level: 0);
     final String readDataFromFile = await readData();

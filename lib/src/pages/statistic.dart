@@ -61,7 +61,6 @@ class _StatisticPageState extends State<StatisticPage> {
   FileStore _fileStore;
   Future<List<Data>> _listDataWakeUpFuture;
   List<Data> _listDataWakeUp;
-  final Map<int, DataForHour> _dataByHour = {};
   int _total, _unsatisfied = 0, _normal = 0, _satisfied = 0;
   final List<String> _titleCounter = [
     'Total',
@@ -81,35 +80,25 @@ class _StatisticPageState extends State<StatisticPage> {
     super.initState();
     _dateSupport = DateSupport();
     _fileStore = const FileStore();
-    for (int i = 0; i < 24; i++) {
-      _dataByHour[i] = DataForHour();
-    }
     _listDataWakeUpFuture = _getListWakeUp();
   }
 
   Future<List<Data>> _getListWakeUp() async {
-    final String readFromFile = await _fileStore.readData();
-    final listDataFromFile = jsonDecode(readFromFile) as List;
-    _listDataWakeUp = listDataFromFile.map((e) => Data.fromMap(e)).toList()
+    final listDataFromFile = await _fileStore.readDataToList();
+    _listDataWakeUp = listDataFromFile
       ..removeWhere((element) => element.feedback == false);
     _total = _listDataWakeUp.length;
 
     for (final data in _listDataWakeUp) {
       if (data.level == 1) {
         _unsatisfied++;
-        _dataByHour[data.timeWakeUp.hour].unsatisfied++;
       }
       if (data.level == 2) {
         _normal++;
-        _dataByHour[data.timeWakeUp.hour].normal++;
       }
       if (data.level == 3) {
         _satisfied++;
-        _dataByHour[data.timeWakeUp.hour].satisfied++;
       }
-    }
-    for (int i = 0; i < 24; i++) {
-      print('$i = ${_dataByHour[i]}');
     }
     return _listDataWakeUp ?? [];
   }
@@ -122,7 +111,7 @@ class _StatisticPageState extends State<StatisticPage> {
           _buildStatisticCounter(),
           _buildStatisticByTimeSleep(),
           _buildStatisticByTimeWakeup(),
-          _buildStatisticByTotalTime()
+          _buildStatisticByCycle()
         ],
       ),
     );
@@ -250,7 +239,7 @@ class _StatisticPageState extends State<StatisticPage> {
             style: TextStyle(fontSize: 20),
           ),
         ),
-        _buildListStatisticByTime(1)
+        _buildStatisticByTime(1)
       ],
     );
   }
@@ -266,23 +255,23 @@ class _StatisticPageState extends State<StatisticPage> {
             style: TextStyle(fontSize: 20),
           ),
         ),
-        _buildListStatisticByTime(2)
+        _buildStatisticByTime(2)
       ],
     );
   }
 
-  Widget _buildStatisticByTotalTime() {
+  Widget _buildStatisticByCycle() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         const Padding(
           padding: EdgeInsets.all(8),
           child: Text(
-            'How many hours of sleep is good',
+            'How many cycle sleep is good',
             style: TextStyle(fontSize: 20),
           ),
         ),
-        _buildListStatisticByTime(3)
+        _buildStatisticByTime(3)
       ],
     );
   }
@@ -294,7 +283,7 @@ class _StatisticPageState extends State<StatisticPage> {
   /// 2: time to wake up
   ///
   /// 3: total time for sleep
-  Widget _buildListStatisticByTime(int type) {
+  Widget _buildStatisticByTime(int type) {
     final double height = Sizes.getHeightNoAppbar(context) * 0.4;
     return FutureBuilder(
       future: _listDataWakeUpFuture,
@@ -307,128 +296,11 @@ class _StatisticPageState extends State<StatisticPage> {
                 child: Text('Loading data ...'),
               ));
         } else {
-          return DelayedAnimation(
-            delay: 300,
-            child: Container(
-              height: height,
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                children: <Widget>[
-                  _tileLeftChart(),
-                  Expanded(child: _listChart(type)),
-                ],
-              ),
-            ),
-          );
+          return StatisticByTime(
+              type: type, height: height, listData: snapshot.data);
         }
       },
     );
-  }
-
-  Widget _tileLeftChart() {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            width: 20,
-            decoration: BoxDecoration(
-                color: Colors.pink,
-                borderRadius: BorderRadius.circular(5),
-                gradient: LinearGradient(
-                    colors: [Colors.blue, Colors.grey, Colors.red],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter)),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  RotatedBox(
-                    quarterTurns: 1,
-                    child: Text(
-                      'Good',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  RotatedBox(
-                    quarterTurns: 1,
-                    child: Text(
-                      'Bad',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        const Text('Hour')
-      ],
-    );
-  }
-
-  /// int type to return statistic by field
-  ///
-  /// 1: time to sleep
-  ///
-  /// 2: time to wake up
-  ///
-  /// 3: total time for sleep
-  Widget _listChart(int type) {
-    return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 24,
-        itemBuilder: (context, index) {
-          final DataForHour data = _dataByHour[index];
-          return Padding(
-            padding: index == 23
-                ? const EdgeInsets.only(left: 16, right: 16)
-                : const EdgeInsets.only(left: 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Flexible(
-                  child: LayoutBuilder(builder: (context, constrains) {
-                    final _height = constrains.maxHeight / 2;
-                    return _typeLineChart(_height, data);
-                  }),
-                ),
-                Text((index).toString())
-              ],
-            ),
-          );
-        });
-  }
-
-  Widget _typeLineChart(double height, DataForHour data) {
-    if (data.level > 0) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Flexible(flex: 1, child: LineChart(height * data.level.abs(), data)),
-          Flexible(
-              flex: 1,
-              child: SizedBox(
-                height: height,
-              )),
-        ],
-      );
-    } else if (data.level < 0) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Flexible(
-              flex: 1,
-              child: SizedBox(
-                height: height,
-              )),
-          Flexible(flex: 1, child: LineChart(height * data.level.abs(), data)),
-        ],
-      );
-    } else {
-      return Container(
-          alignment: Alignment.center, child: Text(data.sum.toString()));
-    }
   }
 }
 
@@ -524,5 +396,198 @@ class LineChart extends StatelessWidget {
     } else {
       return null;
     }
+  }
+}
+
+class StatisticByTime extends StatelessWidget {
+  StatisticByTime({this.type, this.height, this.listData}) {
+    _initData();
+    if (type == 1) {
+      // statistic time to go to sleep
+      for (final data in listData) {
+        if(data.timeSleep == null){
+          continue;
+        }
+        if (data.level == 1) {
+          _dataByHour[data.timeSleep.hour].unsatisfied++;
+        }
+        if (data.level == 2) {
+          _dataByHour[data.timeSleep.hour].normal++;
+        }
+        if (data.level == 3) {
+          _dataByHour[data.timeSleep.hour].satisfied++;
+        }
+      }
+    } else if (type == 2) {
+      // statistic time to wake up
+      for (final data in listData) {
+        if (data.level == 1) {
+          _dataByHour[data.timeWakeUp.hour].unsatisfied++;
+        }
+        if (data.level == 2) {
+          _dataByHour[data.timeWakeUp.hour].normal++;
+        }
+        if (data.level == 3) {
+          _dataByHour[data.timeWakeUp.hour].satisfied++;
+        }
+      }
+    } else if (type == 3) {
+      // statistic by value of cycle sleep.
+      for (final data in listData) {
+        if(data.cycleSleep == null){
+          continue;
+        }
+        if (data.level == 1) {
+          _dataByHour[data.cycleSleep].unsatisfied++;
+        }
+        if (data.level == 2) {
+          _dataByHour[data.cycleSleep].normal++;
+        }
+        if (data.level == 3) {
+          _dataByHour[data.cycleSleep].satisfied++;
+        }
+      }
+    }
+  }
+
+  final int type;
+  final double height;
+  final List<Data> listData;
+  final Map<int, DataForHour> _dataByHour = {};
+
+  void _initData() {
+    if (type == 1 || type == 2) {
+      for (int i = 0; i < 24; i++) {
+        _dataByHour[i] = DataForHour();
+      }
+    } else if (type == 3) {
+      for (int i = 1; i <= 10; i++) {
+        _dataByHour[i] = DataForHour();
+      }
+    }
+  }
+
+  Widget _tileLeftChart() {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            width: 20,
+            decoration: BoxDecoration(
+                color: Colors.pink,
+                borderRadius: BorderRadius.circular(5),
+                gradient: LinearGradient(
+                    colors: [Colors.blue, Colors.grey, Colors.red],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  RotatedBox(
+                    quarterTurns: 1,
+                    child: Text(
+                      'Good',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  RotatedBox(
+                    quarterTurns: 1,
+                    child: Text(
+                      'Bad',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Text(type == 3 ? 'Cycle' : 'Hour')
+      ],
+    );
+  }
+
+  /// int type to return statistic by field
+  ///
+  /// 1: time to sleep
+  ///
+  /// 2: time to wake up
+  ///
+  /// 3: total time for sleep
+  Widget _listChart(int type) {
+    return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _dataByHour.length,
+        itemBuilder: (context, index) {
+          final DataForHour data = _dataByHour[type == 3 ? index + 1 : index];
+          return Padding(
+            padding: index == 23
+                ? const EdgeInsets.only(left: 16, right: 16)
+                : const EdgeInsets.only(left: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Flexible(
+                  child: LayoutBuilder(builder: (context, constrains) {
+                    final _height = constrains.maxHeight / 2;
+                    return _typeLineChart(_height, data);
+                  }),
+                ),
+                Text((type == 3 ? index + 1 : index).toString())
+              ],
+            ),
+          );
+        });
+  }
+
+  Widget _typeLineChart(double height, DataForHour data) {
+    if (data.level > 0) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Flexible(flex: 1, child: LineChart(height * data.level.abs(), data)),
+          Flexible(
+              flex: 1,
+              child: SizedBox(
+                height: height,
+              )),
+        ],
+      );
+    } else if (data.level < 0) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Flexible(
+              flex: 1,
+              child: SizedBox(
+                height: height,
+              )),
+          Flexible(flex: 1, child: LineChart(height * data.level.abs(), data)),
+        ],
+      );
+    } else {
+      return Container(
+          alignment: Alignment.center, child: Text(data.sum.toString()));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DelayedAnimation(
+      delay: 300,
+      child: Container(
+        height: height,
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          children: <Widget>[
+            _tileLeftChart(),
+            Expanded(child: _listChart(type)),
+          ],
+        ),
+      ),
+    );
+    ;
   }
 }
