@@ -1,24 +1,27 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../pages/profile.dart';
 
 class NotificationSupport {
-  NotificationSupport._() {
-    _init();
+  NotificationSupport._(BuildContext context) {
+    _init(context);
   }
 
+  BuildContext context;
   static NotificationSupport _instance;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-  static NotificationSupport getInstance() {
-    return _instance ??= NotificationSupport._();
+  static NotificationSupport instance(BuildContext context) {
+    return _instance ??= NotificationSupport._(context);
   }
 
-  void _init() async {
+  void _init(BuildContext context) async {
+    this.context = context;
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     const initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     final initializationSettingsIOS = IOSInitializationSettings(
         onDidReceiveLocalNotification: onDidReceiveLocalNotification);
     final initializationSettings = InitializationSettings(
@@ -27,7 +30,7 @@ class NotificationSupport {
         onSelectNotification: onSelectNotification);
   }
 
-  void addNotifiSchedule(DateTime time) async {
+  void addNotifiSchedule(DateTime timeWakeup, Duration timeForSleep) async {
     final androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'make_sleep_better_id',
         'make_sleep_better_name',
@@ -36,11 +39,15 @@ class NotificationSupport {
     final NotificationDetails platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.schedule(
-        time.millisecondsSinceEpoch,
-        'scheduled title',
-        'Give feedback on that!',
-        time,
+        timeWakeup.millisecondsSinceEpoch,
+        'How do you feel ?',
+        'You slept within ${timeForSleep.inHours} hours ${timeForSleep.inMinutes} minutes',
+        timeWakeup,
         platformChannelSpecifics);
+  }
+
+  void cancelAllNotifi() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 
   Future onSelectNotification(String payload) async {
@@ -51,7 +58,12 @@ class NotificationSupport {
   }
 
   Future onDidReceiveLocalNotification(
-      int id, String title, String body, String payload) {}
+      int id, String title, String body, String payload) {
+    // todo: add logic to handle did receive local notification
+  }
 
-  void onSelectNotifi(String payload) {}
+  void onSelectNotifi(String payload) async {
+    await Navigator.push(
+        context, CupertinoPageRoute(builder: (context) => const ProfilePage()));
+  }
 }

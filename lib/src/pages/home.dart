@@ -355,7 +355,8 @@ class _HomePageState extends State<HomePage> {
       ),
     ));
     _mainProvider.addData(timeWakeup, _now, cycle);
-
+    _mainProvider.setScheduleNotification(
+        timeWakeup, _now, cycle, _delayMinute, context);
     _launchClock(timeWakeup.hour, timeWakeup.minute);
   }
 }

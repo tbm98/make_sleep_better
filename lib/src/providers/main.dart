@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:make_sleep_better/src/supports/notifications.dart';
 import 'package:make_sleep_better/src/supports/prefs.dart';
 import '../supports/file_store.dart';
 import '../supports/strings.dart';
@@ -51,5 +52,13 @@ class MainProvider extends ChangeNotifier {
   Future<File> addData(
       DateTime timeWakeup, DateTime timeSleep, int cycle) async {
     return await _fileStore.addData(timeWakeup, timeSleep, cycle);
+  }
+
+  void setScheduleNotification(DateTime timeWakeup, DateTime now, int cycle,
+      int delayMinutes, BuildContext context) {
+    final int minutes = cycle * 90 + delayMinutes;
+    final timeForSleep = Duration(hours: minutes ~/ 60, minutes: minutes % 60);
+    NotificationSupport.instance(context)
+        .addNotifiSchedule(timeWakeup, timeForSleep);
   }
 }
