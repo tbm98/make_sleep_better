@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:make_sleep_better/src/obj/time_wake_up.dart';
+
+import '../obj/time_wake_up.dart';
 
 class DateSupport {
   DateSupport() {
@@ -29,7 +30,7 @@ class DateSupport {
 
   List<TimeWakeUp> getTimesWakeUp(
       DateTime sleep, int delayMinutes, double minCycle, double maxCyle) {
-    List<TimeWakeUp> times = [];
+    final List<TimeWakeUp> times = [];
     for (int i = minCycle.toInt(); i <= maxCyle.toInt(); i++) {
       times.add(
           TimeWakeUp(sleep.add(Duration(minutes: i * 90 + delayMinutes)), i));
@@ -38,7 +39,7 @@ class DateSupport {
   }
 
   String formatTime(TimeOfDay timeOfDay) {
-    DateTime tmp = DateTime(
+    final DateTime tmp = DateTime(
         time.year, time.month, time.day, timeOfDay.hour, timeOfDay.minute);
     return DateFormat('HH:mm').format(tmp);
   }

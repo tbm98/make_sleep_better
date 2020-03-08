@@ -1,15 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/obj/data.dart';
-import 'package:make_sleep_better/src/pages/delay_animation.dart';
-import 'package:make_sleep_better/src/pages/feedback.dart';
-import 'package:make_sleep_better/src/pages/statistic.dart';
-import 'package:make_sleep_better/src/providers/main.dart';
-import 'package:make_sleep_better/src/supports/dates.dart';
-import 'package:make_sleep_better/src/supports/file_store.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../obj/data.dart';
+import 'delay_animation.dart';
+import 'feedback.dart';
+import 'statistic.dart';
+import '../providers/main.dart';
+import '../supports/dates.dart';
+import '../supports/file_store.dart';
 import '../supports/prefs.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -26,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int _delayMinute = 0;
   PrefsSupport _prefsSupport;
   DateSupport _dateSupport;
-  TimeOfDay _timeOfDay = TimeOfDay.now();
+  final TimeOfDay _timeOfDay = TimeOfDay.now();
   int _indexPage = 0;
   final _pageController = PageController(initialPage: 0);
   FileStore _fileStore;

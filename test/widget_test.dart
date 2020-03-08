@@ -6,30 +6,27 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:make_sleep_better/main.dart';
 import 'package:make_sleep_better/src/obj/data.dart';
-import 'package:make_sleep_better/src/supports/file_store.dart';
+import 'package:make_sleep_better/src/supports/logs.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    Data data = Data(timeWakeUp: DateTime.now(), feedback: true, level: 2);
+    final Data data =
+        Data(timeWakeUp: DateTime.now(), feedback: true, level: 2);
 
     //test json convert
-    print(jsonEncode(data));
+    logs(jsonEncode(data));
 //    const FileStore fileStore = FileStore();
 //    String value = await fileStore.readData();
 //    print('value is:$value');
     final List<Data> listData = [data, data];
-    String result = jsonEncode(listData);
-    print(result);
+    final String result = jsonEncode(listData);
+    logs(result);
 
     final listDynamic = jsonDecode(result) as List;
-    print(jsonEncode(
+    logs(jsonEncode(
         listDynamic.map((e) => Data.fromMap(e)).toList()..add(data)));
 
     //test decode empty string

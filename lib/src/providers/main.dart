@@ -38,7 +38,8 @@ class MainProvider extends ChangeNotifier {
         '${Strings.time_cycle[cycle - 1]} + ${delayMinute}p';
   }
 
-  Future<File> addData(DateTime time, DateTime now, int cycle) async {
-    return await _fileStore.addData(time, now, cycle);
+  Future<File> addData(
+      DateTime timeWakeup, DateTime timeSleep, int cycle) async {
+    return await _fileStore.addData(timeWakeup, timeSleep, cycle);
   }
 }

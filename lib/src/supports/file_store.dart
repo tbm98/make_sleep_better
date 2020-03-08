@@ -51,20 +51,18 @@ class FileStore {
 //    await Future.delayed(const Duration(milliseconds: 500));
 
     final String readDataFromFile = await readData();
-    List<Data> listData;
 
     //if not empty, must read data=>convert to listdata=>add new data
     // =>encode to json=> write to filestore
     final listDataFromFile = jsonDecode(readDataFromFile) as List;
-    listData = listDataFromFile.map((e) => Data.fromMap(e)).toList();
-
-    return listData;
+    return listDataFromFile.map((e) => Data.fromMap(e)).toList();
   }
 
-  Future<File> addData(DateTime time, DateTime now, int cycle) async {
+  Future<File> addData(
+      DateTime timeWakeup, DateTime timeSleep, int cycle) async {
     final data = Data(
-        timeSleep: now,
-        timeWakeUp: time,
+        timeSleep: timeSleep,
+        timeWakeUp: timeWakeup,
         cycleSleep: cycle,
         feedback: false,
         level: 0);

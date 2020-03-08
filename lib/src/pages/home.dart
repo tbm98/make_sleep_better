@@ -1,14 +1,11 @@
-import 'dart:math';
-
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/pages/delay_animation.dart';
-import 'package:make_sleep_better/src/pages/info.dart';
-import 'package:make_sleep_better/src/supports/logs.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
+import 'delay_animation.dart';
+import 'info.dart';
 import '../supports/prefs.dart';
 import '../providers/main.dart';
 import '../obj/time_wake_up.dart';
@@ -270,25 +267,26 @@ class _HomePageState extends State<HomePage> {
               delay: 150,
               child: ListView.separated(
                   itemBuilder: (context, index) {
-                    final TimeWakeUp data = _timeWakeUp[index];
+                    final TimeWakeUp timeWakeup = _timeWakeUp[index];
 
                     return ListTile(
                       title: Text(
-                        _dateSupport.formatHHmmWithDay(data.time),
+                        _dateSupport.formatHHmmWithDay(timeWakeup.time),
                         style:
                             TextStyle(fontSize: Sizes.getWidth(context) / 16),
                       ),
-                      subtitle: Text(
-                          _mainProvider.getSuggest(data.cycle, snapshot.data)),
+                      subtitle: Text(_mainProvider.getSuggest(
+                          timeWakeup.cycle, snapshot.data)),
                       trailing: InkWell(
                         onTap: () {
-                          _confirmSelectTime(data.time, data.cycle);
+                          _confirmSelectTime(timeWakeup.time, timeWakeup.cycle);
                         },
                         child: Column(
                           children: <Widget>[
                             Icon(
-                              _mainProvider.getIconOfCycle(data.cycle),
-                              color: _mainProvider.getColorOfCycle(data.cycle),
+                              _mainProvider.getIconOfCycle(timeWakeup.cycle),
+                              color: _mainProvider
+                                  .getColorOfCycle(timeWakeup.cycle),
                             ),
                             const Text('Select')
                           ],
@@ -307,14 +305,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _confirmSelectTime(DateTime time, int cycle) {
+  void _confirmSelectTime(DateTime timeWakeup, int cycle) {
 //    logs(time.difference(_now).inMinutes);
     showDialog(
         context: context,
         builder: (context) {
           return CupertinoAlertDialog(
             title: Text(
-              _dateSupport.formatHHmmWithDay(time),
+              _dateSupport.formatHHmmWithDay(timeWakeup),
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 36),
             ),
             content: const Text('Do you want to wake up at this time ?'),
@@ -330,7 +328,7 @@ class _HomePageState extends State<HomePage> {
               ),
               FlatButton(
                 onPressed: () {
-                  _handleWhenConfirmSelected(time, cycle);
+                  _handleWhenConfirmSelected(timeWakeup, cycle);
                 },
                 child: Text(
                   'Yes',
@@ -342,13 +340,13 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  void _handleWhenConfirmSelected(DateTime time, int cycle) {
+  void _handleWhenConfirmSelected(DateTime timeWakeup, int cycle) {
     Navigator.pop(context);
     _scaffoldKey.currentState.showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
       duration: const Duration(minutes: 1),
       content: Text(
-          'Let\'s set the alarm at ${_dateSupport.formatHHmmWithDay(time)}'),
+          'Let\'s set the alarm at ${_dateSupport.formatHHmmWithDay(timeWakeup)}'),
       action: SnackBarAction(
         label: 'Yes, I did this.',
         onPressed: () {
@@ -356,8 +354,8 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     ));
-    _mainProvider.addData(time, _now, cycle);
+    _mainProvider.addData(timeWakeup, _now, cycle);
 
-    _launchClock(time.hour, time.minute);
+    _launchClock(timeWakeup.hour, timeWakeup.minute);
   }
 }

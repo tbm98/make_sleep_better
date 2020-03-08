@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/pages/delay_animation.dart';
 
+import 'delay_animation.dart';
 import '../obj/data.dart';
 import '../supports/dates.dart';
 import '../supports/file_store.dart';
@@ -72,26 +72,63 @@ class _FeedbackPageState extends State<FeedbackPage> {
   Widget _buildListWakeUp() {
     return DelayedAnimation(
       delay: 250,
-      child: ListView.builder(
+      child: ListView.separated(
+          separatorBuilder: (_, __) {
+            return const Divider();
+          },
           itemCount: _listDataWakeUp.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(
-                _dateSupport
-                    .formatHHmmWithDay(_listDataWakeUp[index].timeWakeUp),
-                style: const TextStyle(fontSize: 24),
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8, bottom: 8),
+                    child: Icon(Icons.access_alarm),
+                  ),
+                  Text(
+                    _dateSupport
+                        .formatWithDayDMY(_listDataWakeUp[index].timeWakeUp),
+                    style: DefaultTextStyle.of(context)
+                        .style
+                        .copyWith(fontSize: 18),
+                  ),
+                ],
               ),
-              subtitle: Text(
-                  _dateSupport.formatDMY(_listDataWakeUp[index].timeWakeUp)),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8, bottom: 4),
+                        child: Icon(Icons.airline_seat_individual_suite),
+                      ),
+                      Text(_dateSupport
+                          .formatWithDayDMY(_listDataWakeUp[index].timeSleep)),
+                    ],
+                  ),
+                  Text(
+                    '${_listDataWakeUp[index].cycleSleep} cycles sleep',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
               trailing: InkWell(
                   onTap: () =>
                       _confirmRating(_listDataWakeUp[index].timeWakeUp, index),
-                  child: const Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      'Vote',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue, width: 0.5)),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Vote',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
                     ),
                   )),
             );

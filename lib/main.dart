@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/providers/main.dart';
-import 'package:make_sleep_better/src/pages/home.dart';
-import 'package:make_sleep_better/src/supports/prefs.dart';
 import 'package:provider/provider.dart';
+
+import 'src/supports/logs.dart';
+import 'src/providers/main.dart';
+import 'src/pages/home.dart';
+import 'src/supports/prefs.dart';
 
 void main() => runApp(MultiProvider(providers: [
       Provider<PrefsSupport>(
@@ -19,11 +21,12 @@ class MyApp extends StatelessWidget {
     return Selector<MainProvider, bool>(
       selector: (context, notifier) => notifier.darkMode,
       builder: (context, data, child) {
-        print('rebuild material app');
+        logs('rebuild material app');
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Make sleep better',
+//          theme: data ? ThemeData.dark() : ThemeData.light(),
           theme: ThemeData(
               primarySwatch: Colors.blue,
               brightness: data ? Brightness.dark : Brightness.light),

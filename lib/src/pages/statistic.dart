@@ -1,14 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/obj/data.dart';
-import 'package:make_sleep_better/src/pages/delay_animation.dart';
-import 'package:make_sleep_better/src/supports/dates.dart';
-import 'package:make_sleep_better/src/supports/file_store.dart';
-import 'package:make_sleep_better/src/supports/logs.dart';
-import 'package:make_sleep_better/src/supports/sizes.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../obj/data.dart';
+import 'delay_animation.dart';
+import '../supports/dates.dart';
+import '../supports/file_store.dart';
+import '../supports/logs.dart';
+import '../supports/sizes.dart';
 
 class DataForHour {
   int unsatisfied = 0, normal = 0, satisfied = 0;
@@ -125,7 +124,7 @@ class _StatisticPageState extends State<StatisticPage> {
           padding: EdgeInsets.all(8),
           child: Text(
             'Statistic counter',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
         FutureBuilder(
@@ -136,7 +135,7 @@ class _StatisticPageState extends State<StatisticPage> {
                 child: Shimmer.fromColors(
                   baseColor: Colors.red,
                   highlightColor: Colors.yellow,
-                  child: Text(
+                  child: const Text(
                     'Loading from data...',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -236,7 +235,7 @@ class _StatisticPageState extends State<StatisticPage> {
           padding: EdgeInsets.all(8),
           child: Text(
             'Good time to go to sleep',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
         _buildStatisticByTime(1)
@@ -252,7 +251,7 @@ class _StatisticPageState extends State<StatisticPage> {
           padding: EdgeInsets.all(8),
           child: Text(
             'Good time to wake up',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
         _buildStatisticByTime(2)
@@ -268,7 +267,7 @@ class _StatisticPageState extends State<StatisticPage> {
           padding: EdgeInsets.all(8),
           child: Text(
             'How many cycle sleep is good',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
         _buildStatisticByTime(3)
@@ -504,10 +503,69 @@ class StatisticByTime extends StatelessWidget {
             ),
           ),
         ),
-        Text(type == 3 ? 'Cycle' : 'Hour')
+        Text(
+          type == 3 ? 'Cycle' : 'Hour',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        )
       ],
     );
   }
+
+  final List<List<int>> _hourOfType = [
+    [
+      20,
+      21,
+      22,
+      23,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      0,
+      1,
+      2,
+      3
+    ],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  ];
 
   /// int type to return statistic by field
   ///
@@ -515,11 +573,11 @@ class StatisticByTime extends StatelessWidget {
   ///
   /// 2: time to wake up
   ///
-  /// 3: total time for sleep
+  /// 3: cycles for sleep
   Widget _listChart(int type) {
     return ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: _dataByHour.length,
+        itemCount: _hourOfType[type - 1].length,
         itemBuilder: (context, index) {
           final DataForHour data = _dataByHour[type == 3 ? index + 1 : index];
           return Padding(
@@ -535,7 +593,7 @@ class StatisticByTime extends StatelessWidget {
                     return _typeLineChart(_height, data);
                   }),
                 ),
-                Text((type == 3 ? index + 1 : index).toString())
+                Text(_hourOfType[type - 1][index].toString())
               ],
             ),
           );
@@ -588,6 +646,5 @@ class StatisticByTime extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }
