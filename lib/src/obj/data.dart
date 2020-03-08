@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Data {
   Data(
       {this.timeSleep,
@@ -18,7 +16,7 @@ class Data {
     );
   }
 
-  int get id => timeSleep.millisecondsSinceEpoch;
+  int get id => timeWakeUp.millisecondsSinceEpoch;
   DateTime timeSleep;
   DateTime timeWakeUp;
   int cycleSleep;
