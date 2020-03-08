@@ -405,7 +405,7 @@ class StatisticByTime extends StatelessWidget {
     if (type == 1) {
       // statistic time to go to sleep
       for (final data in listData) {
-        if(data.timeSleep == null){
+        if (data.timeSleep == null) {
           continue;
         }
         if (data.level == 1) {
@@ -434,7 +434,7 @@ class StatisticByTime extends StatelessWidget {
     } else if (type == 3) {
       // statistic by value of cycle sleep.
       for (final data in listData) {
-        if(data.cycleSleep == null){
+        if (data.cycleSleep == null) {
           continue;
         }
         if (data.level == 1) {

@@ -61,7 +61,7 @@ class FileStore {
     return listData;
   }
 
-  Future<File> addData(DateTime time, DateTime now,int cycle) async {
+  Future<File> addData(DateTime time, DateTime now, int cycle) async {
     final data = Data(
         timeSleep: now,
         timeWakeUp: time,

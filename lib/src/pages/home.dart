@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                           _mainProvider.getSuggest(data.cycle, snapshot.data)),
                       trailing: InkWell(
                         onTap: () {
-                          _confirmSelectTime(data.time,data.cycle);
+                          _confirmSelectTime(data.time, data.cycle);
                         },
                         child: Column(
                           children: <Widget>[
@@ -307,7 +307,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _confirmSelectTime(DateTime time,int cycle) {
+  void _confirmSelectTime(DateTime time, int cycle) {
 //    logs(time.difference(_now).inMinutes);
     showDialog(
         context: context,
@@ -330,7 +330,7 @@ class _HomePageState extends State<HomePage> {
               ),
               FlatButton(
                 onPressed: () {
-                  _handleWhenConfirmSelected(time,cycle);
+                  _handleWhenConfirmSelected(time, cycle);
                 },
                 child: Text(
                   'Yes',
@@ -342,7 +342,7 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  void _handleWhenConfirmSelected(DateTime time,int cycle) {
+  void _handleWhenConfirmSelected(DateTime time, int cycle) {
     Navigator.pop(context);
     _scaffoldKey.currentState.showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
@@ -356,7 +356,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     ));
-    _mainProvider.addData(time,_now,cycle);
+    _mainProvider.addData(time, _now, cycle);
 
     _launchClock(time.hour, time.minute);
   }
