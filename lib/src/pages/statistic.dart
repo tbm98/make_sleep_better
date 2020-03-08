@@ -73,6 +73,12 @@ class _StatisticPageState extends State<StatisticPage> {
     Colors.grey,
     Colors.blue
   ];
+  final List<IconData> _iconLevel = [
+    null,
+    Icons.sentiment_dissatisfied,
+    Icons.sentiment_neutral,
+    Icons.sentiment_satisfied
+  ];
 
   @override
   void initState() {
@@ -194,17 +200,54 @@ class _StatisticPageState extends State<StatisticPage> {
               style: TextStyle(color: _colorCounter[index], fontSize: 36),
             ),
             content: Container(
-              height: 300,
-              child: ListView.builder(
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: ListView.separated(
+                  separatorBuilder: (_, __) {
+                    return const Divider();
+                  },
                   itemCount: _listData.length,
                   itemBuilder: (context, id) {
                     final data = _listData[id];
                     return Material(
                       color: Colors.transparent,
                       child: ListTile(
-                        title: Text(
-                            _dateSupport.formatHHmmWithDay(data.timeWakeUp)),
-                        subtitle: Text(_dateSupport.formatDMY(data.timeWakeUp)),
+                        contentPadding: EdgeInsets.zero,
+                        title: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: Icon(Icons.access_alarm),
+                            ),
+                            Text(
+                              _dateSupport.formatWithDayDMY(
+                                  _listDataWakeUp[index].timeWakeUp),
+                            ),
+                          ],
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 8, bottom: 4),
+                                  child:
+                                      Icon(Icons.airline_seat_individual_suite),
+                                ),
+                                Text(_dateSupport.formatWithDayDMY(
+                                    _listDataWakeUp[index].timeSleep)),
+                              ],
+                            ),
+                            Text(
+                              '${_listDataWakeUp[index].cycleSleep} cycles sleep',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
                         trailing: _getTrailingStatistic(index, data.level),
                       ),
                     );
@@ -216,11 +259,9 @@ class _StatisticPageState extends State<StatisticPage> {
 
   Widget _getTrailingStatistic(int index, int level) {
     if (index == 0) {
-      return Text(
-        _titleCounter[level],
-        style: TextStyle(
-          color: _colorCounter[level],
-        ),
+      return Icon(
+        _iconLevel[level],
+        color: _colorCounter[level],
       );
     } else {
       return null;
