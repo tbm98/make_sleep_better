@@ -220,8 +220,7 @@ class _StatisticPageState extends State<StatisticPage> {
                               child: Icon(Icons.access_alarm),
                             ),
                             Text(
-                              _dateSupport.formatWithDayDMY(
-                                  _listDataWakeUp[index].timeWakeUp),
+                              _dateSupport.formatWithDayDMY(data.timeWakeUp),
                             ),
                           ],
                         ),
@@ -237,12 +236,12 @@ class _StatisticPageState extends State<StatisticPage> {
                                   child:
                                       Icon(Icons.airline_seat_individual_suite),
                                 ),
-                                Text(_dateSupport.formatWithDayDMY(
-                                    _listDataWakeUp[index].timeSleep)),
+                                Text(_dateSupport
+                                    .formatWithDayDMY(data.timeSleep)),
                               ],
                             ),
                             Text(
-                              '${_listDataWakeUp[index].cycleSleep} cycles sleep',
+                              '${data.cycleSleep} cycles sleep',
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),

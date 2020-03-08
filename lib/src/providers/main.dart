@@ -1,21 +1,31 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:make_sleep_better/src/supports/prefs.dart';
 import '../supports/file_store.dart';
 import '../supports/strings.dart';
 
 class MainProvider extends ChangeNotifier {
   MainProvider() {
     _fileStore = const FileStore();
+    _prefsSupport = PrefsSupport();
+    _initLoad();
   }
 
+  PrefsSupport _prefsSupport;
   FileStore _fileStore;
   bool _darkMode = false;
 
   bool get darkMode => _darkMode;
 
-  void switchBrightnessMode() {
+  void _initLoad() async {
+    _darkMode = await _prefsSupport.getDarkMode();
+    notifyListeners();
+  }
+
+  void switchBrightnessMode() async {
     _darkMode = !_darkMode;
+    await _prefsSupport.saveDarkMode(_darkMode);
     notifyListeners();
   }
 
