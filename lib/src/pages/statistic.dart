@@ -579,7 +579,7 @@ class StatisticByTime extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: _hourOfType[type - 1].length,
         itemBuilder: (context, index) {
-          final DataForHour data = _dataByHour[type == 3 ? index + 1 : index];
+          final DataForHour data = _dataByHour[_hourOfType[type - 1][index]];
           return Padding(
             padding: index == 23
                 ? const EdgeInsets.only(left: 16, right: 16)
