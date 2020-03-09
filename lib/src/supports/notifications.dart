@@ -41,7 +41,8 @@ class NotificationSupport {
     await flutterLocalNotificationsPlugin.schedule(
         timeWakeup.millisecondsSinceEpoch % 1000000,
         'How do you feel ?',
-        'You slept within ${timeForSleep.inHours} hours ${timeForSleep.inMinutes} minutes',
+        'You slept within ${timeForSleep.inHours} '
+            'hours ${timeForSleep.inMinutes % 60} minutes',
         timeWakeup,
         platformChannelSpecifics);
   }
