@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:make_sleep_better/src/supports/logs.dart';
 import '../pages/profile.dart';
 
 class NotificationSupport {
@@ -38,13 +39,18 @@ class NotificationSupport {
     final iOSPlatformChannelSpecifics = IOSNotificationDetails();
     final NotificationDetails platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.schedule(
-        timeWakeup.millisecondsSinceEpoch % 1000000,
-        'How do you feel ?',
-        'You slept within ${timeForSleep.inHours} '
-            'hours ${timeForSleep.inMinutes % 60} minutes',
-        timeWakeup,
-        platformChannelSpecifics);
+    try {
+      await flutterLocalNotificationsPlugin.schedule(
+          timeWakeup.millisecondsSinceEpoch % 1000000,
+          'How do you feel ?',
+          'You slept within ${timeForSleep.inHours} '
+              'hours ${timeForSleep.inMinutes % 60} minutes',
+          timeWakeup,
+          platformChannelSpecifics);
+    }catch(e,staskTrace){
+      logs(e);
+      logs(staskTrace);
+    }
   }
 
   void cancelAllNotifi() async {

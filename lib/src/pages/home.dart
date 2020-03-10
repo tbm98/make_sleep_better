@@ -1,6 +1,7 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:make_sleep_better/src/supports/logs.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -120,14 +121,19 @@ class _HomePageState extends State<HomePage> {
 
   void _launchClock(int hour, int minutes) async {
     if (Platform.isAndroid) {
-      final AndroidIntent intent =
-          AndroidIntent(action: 'android.intent.action.SET_ALARM', flags: [
-        0x10000000
-      ], arguments: {
-        'android.intent.extra.alarm.HOUR': hour,
-        'android.intent.extra.alarm.MINUTES': minutes
-      });
-      await intent.launch();
+      try {
+        final AndroidIntent intent =
+        AndroidIntent(action: 'android.intent.action.SET_ALARM', flags: [
+          0x10000000
+        ], arguments: {
+          'android.intent.extra.alarm.HOUR': hour,
+          'android.intent.extra.alarm.MINUTES': minutes
+        });
+        await intent.launch();
+      }catch(e,staskTrace){
+        logs(e);
+        logs(staskTrace);
+      }
     }
   }
 
