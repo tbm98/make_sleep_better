@@ -1,10 +1,11 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/supports/logs.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:code_faster/code_faster.dart' hide DateSupport;
 
+import '../supports/logs.dart';
 import 'delay_animation.dart';
 import 'info.dart';
 import '../supports/prefs.dart';
@@ -100,15 +101,13 @@ class _HomePageState extends State<HomePage> {
       IconButton(
         icon: Icon(Icons.info),
         onPressed: () {
-          Navigator.push(
-              context, CupertinoPageRoute(builder: (_) => const InfoPage()));
+          context.push((_) => const InfoPage());
         },
       ),
       IconButton(
         icon: Icon(Icons.account_circle),
         onPressed: () async {
-          await Navigator.push(
-              context, CupertinoPageRoute(builder: (_) => const ProfilePage()));
+          await context.push((_) => const ProfilePage());
           setState(() {
             _delayMinuteFuture =
                 Provider.of<PrefsSupport>(context, listen: false)
@@ -123,14 +122,14 @@ class _HomePageState extends State<HomePage> {
     if (Platform.isAndroid) {
       try {
         final AndroidIntent intent =
-        AndroidIntent(action: 'android.intent.action.SET_ALARM', flags: [
+            AndroidIntent(action: 'android.intent.action.SET_ALARM', flags: [
           0x10000000
         ], arguments: {
           'android.intent.extra.alarm.HOUR': hour,
           'android.intent.extra.alarm.MINUTES': minutes
         });
         await intent.launch();
-      }catch(e,staskTrace){
+      } catch (e, staskTrace) {
         logs(e);
         logs(staskTrace);
       }

@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Make sleep better - Giúp giấc ngủ tốt hơn',
-//          theme: data ? ThemeData.dark() : ThemeData.light(),
           theme: ThemeData(
               primarySwatch: Colors.blue,
               brightness: data ? Brightness.dark : Brightness.light),
