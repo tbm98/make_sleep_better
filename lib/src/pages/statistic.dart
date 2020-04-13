@@ -1,6 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:make_sleep_better/src/obj/data_for_hour.dart';
+import 'package:make_sleep_better/src/pages/statistic_detail.dart';
+import 'package:make_sleep_better/src/widgets/line_chart.dart';
+import 'package:make_sleep_better/src/widgets/list_statistic_dialog_content.dart';
+import 'package:make_sleep_better/src/widgets/statistic_by_time.dart';
+import 'package:make_sleep_better/src/widgets/tile_counter.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:code_faster/code_faster.dart' hide DateSupport;
 
 import '../obj/data.dart';
 import 'delay_animation.dart';
@@ -8,45 +15,6 @@ import '../supports/dates.dart';
 import '../supports/file_store.dart';
 import '../supports/logs.dart';
 import '../supports/sizes.dart';
-
-class DataForHour {
-  int unsatisfied = 0, normal = 0, satisfied = 0;
-
-  int get sum => unsatisfied + normal + satisfied;
-
-  double get level {
-    if (sum == 0) {
-      return 0;
-    }
-    return (unsatisfied * -1 + normal * 0 + satisfied * 1) / sum;
-  }
-
-  double get unpt {
-    if (sum == 0) {
-      return 0;
-    }
-    return unsatisfied / sum;
-  }
-
-  double get nopt {
-    if (sum == 0) {
-      return 0;
-    }
-    return normal / sum;
-  }
-
-  double get sapt {
-    if (sum == 0) {
-      return 0;
-    }
-    return satisfied / sum;
-  }
-
-  @override
-  String toString() {
-    return '$unsatisfied;$normal;$satisfied;$level';
-  }
-}
 
 class StatisticPage extends StatefulWidget {
   const StatisticPage();
@@ -115,8 +83,6 @@ class _StatisticPageState extends State<StatisticPage> {
         children: <Widget>[
           _buildStatisticCounter(),
           _buildStatisticByTimeSleep(),
-          _buildStatisticByTimeWakeup(),
-          _buildStatisticByCycle()
         ],
       ),
     );
@@ -194,65 +160,12 @@ class _StatisticPageState extends State<StatisticPage> {
     showDialog(
         context: context,
         builder: (context) {
-          return CupertinoAlertDialog(
-            title: Text(
+          return ListStatisticDialogContent(
               _titleCounter[index],
-              style: TextStyle(color: _colorCounter[index], fontSize: 36),
-            ),
-            content: Container(
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: ListView.separated(
-                  separatorBuilder: (_, __) {
-                    return const Divider();
-                  },
-                  itemCount: _listData.length,
-                  itemBuilder: (context, id) {
-                    final data = _listData[id];
-                    return Material(
-                      color: Colors.transparent,
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: Icon(Icons.access_alarm),
-                            ),
-                            Text(
-                              _dateSupport.formatWithDayDMY(data.timeWakeUp),
-                            ),
-                          ],
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 8, bottom: 4),
-                                  child:
-                                      Icon(Icons.airline_seat_individual_suite),
-                                ),
-                                Text(_dateSupport
-                                    .formatWithDayDMY(data.timeSleep)),
-                              ],
-                            ),
-                            Text(
-                              '${data.cycleSleep} cycles sleep',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        trailing: _getTrailingStatistic(index, data.level),
-                      ),
-                    );
-                  }),
-            ),
-          );
+              _colorCounter[index],
+              _listData,
+              _dateSupport.formatWithDayDMY,
+              (level) => _getTrailingStatistic(index, level));
         });
   }
 
@@ -274,56 +187,17 @@ class _StatisticPageState extends State<StatisticPage> {
         const Padding(
           padding: EdgeInsets.all(8),
           child: Text(
-            'Good time to go to sleep',
+            'Statistics by bedtime.',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        _buildStatisticByTime(1)
+        _buildStatisticByTime()
       ],
     );
   }
 
-  Widget _buildStatisticByTimeWakeup() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.all(8),
-          child: Text(
-            'Good time to wake up',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        _buildStatisticByTime(2)
-      ],
-    );
-  }
-
-  Widget _buildStatisticByCycle() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.all(8),
-          child: Text(
-            'How many cycle sleep is good',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        _buildStatisticByTime(3)
-      ],
-    );
-  }
-
-  /// int type to return statistic by field
-  ///
-  /// 1: time to sleep
-  ///
-  /// 2: time to wake up
-  ///
-  /// 3: total time for sleep
-  Widget _buildStatisticByTime(int type) {
-    final double height = Sizes.getHeightNoAppbar(context) * 0.4;
+  Widget _buildStatisticByTime() {
+    final double height = context.getH(30);
     return FutureBuilder(
       future: _listDataWakeUpFuture,
       builder: (context, snapshot) {
@@ -336,355 +210,9 @@ class _StatisticPageState extends State<StatisticPage> {
               ));
         } else {
           return StatisticByTime(
-              type: type, height: height, listData: snapshot.data);
+              type: 0, height: height, listData: snapshot.data);
         }
       },
-    );
-  }
-}
-
-class TileCounter extends StatelessWidget {
-  const TileCounter(this.color, this.number, this.name, this.showDialog);
-
-  final Color color;
-  final int number;
-  final String name;
-  final VoidCallback showDialog;
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-        aspectRatio: 1,
-        child: Card(
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16))),
-          child: InkWell(
-            onTap: showDialog,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Text(
-                  number.toString(),
-                  style: TextStyle(fontSize: 36, color: color),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(name),
-                ),
-              ],
-            ),
-          ),
-        ));
-  }
-}
-
-class LineChart extends StatelessWidget {
-  const LineChart(this.maxHeight, this.data);
-
-  final double maxHeight;
-  final DataForHour data;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(5),
-      child: Container(
-        height: maxHeight,
-        child: Column(children: _getLine()),
-      ),
-    );
-  }
-
-  List<Widget> _getLine() {
-    if (data.level < 0) {
-      return [
-        Container(
-          height: data.sapt * maxHeight,
-          width: 40,
-          color: Colors.blue,
-        ),
-        Container(
-          height: data.nopt * maxHeight,
-          width: 40,
-          color: Colors.grey,
-        ),
-        Container(
-          height: data.unpt * maxHeight,
-          width: 40,
-          color: Colors.red,
-        ),
-      ];
-    } else if (data.level > 0) {
-      return [
-        Container(
-          height: data.unpt * maxHeight,
-          width: 40,
-          color: Colors.red,
-        ),
-        Container(
-          height: data.nopt * maxHeight,
-          width: 40,
-          color: Colors.grey,
-        ),
-        Container(
-          height: data.sapt * maxHeight,
-          width: 40,
-          color: Colors.blue,
-        ),
-      ];
-    } else {
-      return null;
-    }
-  }
-}
-
-class StatisticByTime extends StatelessWidget {
-  StatisticByTime({this.type, this.height, this.listData}) {
-    _initData();
-    if (type == 1) {
-      // statistic time to go to sleep
-      for (final data in listData) {
-        if (data.timeSleep == null) {
-          continue;
-        }
-        if (data.level == 1) {
-          _dataByHour[data.timeSleep.hour].unsatisfied++;
-        }
-        if (data.level == 2) {
-          _dataByHour[data.timeSleep.hour].normal++;
-        }
-        if (data.level == 3) {
-          _dataByHour[data.timeSleep.hour].satisfied++;
-        }
-      }
-    } else if (type == 2) {
-      // statistic time to wake up
-      for (final data in listData) {
-        if (data.level == 1) {
-          _dataByHour[data.timeWakeUp.hour].unsatisfied++;
-        }
-        if (data.level == 2) {
-          _dataByHour[data.timeWakeUp.hour].normal++;
-        }
-        if (data.level == 3) {
-          _dataByHour[data.timeWakeUp.hour].satisfied++;
-        }
-      }
-    } else if (type == 3) {
-      // statistic by value of cycle sleep.
-      for (final data in listData) {
-        if (data.cycleSleep == null) {
-          continue;
-        }
-        if (data.level == 1) {
-          _dataByHour[data.cycleSleep].unsatisfied++;
-        }
-        if (data.level == 2) {
-          _dataByHour[data.cycleSleep].normal++;
-        }
-        if (data.level == 3) {
-          _dataByHour[data.cycleSleep].satisfied++;
-        }
-      }
-    }
-  }
-
-  final int type;
-  final double height;
-  final List<Data> listData;
-  final Map<int, DataForHour> _dataByHour = {};
-
-  void _initData() {
-    if (type == 1 || type == 2) {
-      for (int i = 0; i < 24; i++) {
-        _dataByHour[i] = DataForHour();
-      }
-    } else if (type == 3) {
-      for (int i = 1; i <= 10; i++) {
-        _dataByHour[i] = DataForHour();
-      }
-    }
-  }
-
-  Widget _tileLeftChart() {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            width: 20,
-            decoration: BoxDecoration(
-                color: Colors.pink,
-                borderRadius: BorderRadius.circular(5),
-                gradient: LinearGradient(
-                    colors: [Colors.blue, Colors.grey, Colors.red],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter)),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  RotatedBox(
-                    quarterTurns: 1,
-                    child: Text(
-                      'Good',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  RotatedBox(
-                    quarterTurns: 1,
-                    child: Text(
-                      'Bad',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Text(
-          type == 3 ? 'Cycle' : 'Hour',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        )
-      ],
-    );
-  }
-
-  final List<List<int>> _hourOfType = [
-    [
-      20,
-      21,
-      22,
-      23,
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19
-    ],
-    [
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23,
-      0,
-      1,
-      2,
-      3
-    ],
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  ];
-
-  /// int type to return statistic by field
-  ///
-  /// 1: time to sleep
-  ///
-  /// 2: time to wake up
-  ///
-  /// 3: cycles for sleep
-  Widget _listChart(int type) {
-    return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: _hourOfType[type - 1].length,
-        itemBuilder: (context, index) {
-          final DataForHour data = _dataByHour[_hourOfType[type - 1][index]];
-          return Padding(
-            padding: index == 23
-                ? const EdgeInsets.only(left: 16, right: 16)
-                : const EdgeInsets.only(left: 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Flexible(
-                  child: LayoutBuilder(builder: (context, constrains) {
-                    final _height = constrains.maxHeight / 2;
-                    return _typeLineChart(_height, data);
-                  }),
-                ),
-                Text(_hourOfType[type - 1][index].toString())
-              ],
-            ),
-          );
-        });
-  }
-
-  Widget _typeLineChart(double height, DataForHour data) {
-    if (data.level > 0) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Flexible(flex: 1, child: LineChart(height * data.level.abs(), data)),
-          Flexible(
-              flex: 1,
-              child: SizedBox(
-                height: height,
-              )),
-        ],
-      );
-    } else if (data.level < 0) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Flexible(
-              flex: 1,
-              child: SizedBox(
-                height: height,
-              )),
-          Flexible(flex: 1, child: LineChart(height * data.level.abs(), data)),
-        ],
-      );
-    } else {
-      return Container(
-          alignment: Alignment.center, child: Text(data.sum.toString()));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DelayedAnimation(
-      delay: 300,
-      child: Container(
-        height: height,
-        margin: const EdgeInsets.only(bottom: 16),
-        child: Row(
-          children: <Widget>[
-            _tileLeftChart(),
-            Expanded(child: _listChart(type)),
-          ],
-        ),
-      ),
     );
   }
 }
