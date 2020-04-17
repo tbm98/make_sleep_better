@@ -1,0 +1,15 @@
+on: push
+name: build and test app
+jobs:
+  build:
+    name: install dependencies
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: takuyaohashi/setup-flutter@v1
+      with:
+        flutter-version: 'latest'
+        channel: 'stable'
+    - run: flutter test
+      name: build ios test
+    - run: flutter build ios --debug --no-codesign
