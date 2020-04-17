@@ -12,4 +12,7 @@ jobs:
         channel: 'stable'
     - run: flutter test
       name: build ios test
+    - run: flutter doctor
+    - run: flutter pub get
+    - run: flutter clean
     - run: flutter build ios --debug --no-codesign
