@@ -1,18 +1,80 @@
 on: push
 name: build and test app
 jobs:
-  build:
+  setup:
     name: install dependencies
-    runs-on: macOS-latest
+    runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v1
-    - uses: takuyaohashi/setup-flutter@v1
-      with:
-        flutter-version: 'latest'
-        channel: 'stable'
+      - name: Checkout
+        uses: actions/checkout@v1
+        
+      - name: Setup flutter
+        uses: takuyaohashi/setup-flutter@v1
+        with:
+          flutter-version: 'latest'
+          channel: 'stable'
+
+      - run: flutter doctor
+      - run: flutter pub get
+      - run: flutter clean
+  pretest:
+    needs: setup
+    name: Check format code
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        
+      - name: Setup flutter
+        uses: takuyaohashi/setup-flutter@v1
+        with:
+          flutter-version: 'latest'
+          channel: 'stable'
     
-    - run: flutter doctor
-    - run: flutter pub get
-    - run: flutter clean
-    - run: flutter test
-    - run: flutter build ios --debug --no-codesign
+      - name: Check format code
+        run: flutter format --set-exit-if-changed --line-length 80 lib test
+  unittest:
+    needs: pretest
+    name: Unit test
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        
+      - name: Setup flutter
+        uses: takuyaohashi/setup-flutter@v1
+        with:
+          flutter-version: 'latest'
+          channel: 'stable'
+      - name: Unit test
+        run: flutter test test/*
+  buildandroid:
+    needs: unittest
+    name: Build android apk test
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        
+      - name: Setup flutter
+        uses: takuyaohashi/setup-flutter@v1
+        with:
+          flutter-version: 'latest'
+          channel: 'stable'
+      - name: Build android apk test
+        run: flutter build aot
+  buildios:
+    needs: buildandroid
+    name: Build ios test
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        
+      - name: Setup flutter
+        uses: takuyaohashi/setup-flutter@v1
+        with:
+          flutter-version: 'latest'
+          channel: 'stable'
+      - name: Build ios test
+        run: flutter build ios --debug --no-codesign
