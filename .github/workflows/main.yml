@@ -20,7 +20,7 @@ jobs:
   pretest:
     needs: setup
     name: Check format code
-    runs-on: self-hosted
+    runs-on: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -36,7 +36,7 @@ jobs:
   unittest:
     needs: pretest
     name: Unit test
-    runs-on: self-hosted
+    runs-on: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -51,7 +51,7 @@ jobs:
   buildandroid:
     needs: unittest
     name: Build android apk test
-    runs-on: self-hosted
+    runs-on: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -66,7 +66,7 @@ jobs:
   buildios:
     needs: buildandroid
     name: Build ios test
-    runs-on: self-hosted
+    runs-on: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
