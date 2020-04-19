@@ -47,7 +47,7 @@ class NotificationSupport {
               'hours ${timeForSleep.inMinutes % 60} minutes',
           timeWakeup,
           platformChannelSpecifics);
-    }catch(e,staskTrace){
+    } catch (e, staskTrace) {
       logs(e);
       logs(staskTrace);
     }
