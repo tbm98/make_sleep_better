@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'src/supports/logs.dart';
-import 'src/providers/main.dart';
 import 'src/pages/home.dart';
+import 'src/providers/main.dart';
+import 'src/supports/logs.dart';
 import 'src/supports/prefs.dart';
 
 void main() => runApp(MultiProvider(providers: [
@@ -35,6 +35,4 @@ class MyApp extends StatelessWidget {
       child: HomePage(),
     );
   }
-  // huhu
-  // hlsjdkjsdflj
 }

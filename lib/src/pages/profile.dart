@@ -2,16 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../obj/data.dart';
-import 'delay_animation.dart';
-import 'feedback.dart';
-import 'statistic.dart';
 import '../providers/main.dart';
 import '../supports/dates.dart';
 import '../supports/file_store.dart';
 import '../supports/prefs.dart';
+import 'delay_animation.dart';
+import 'feedback.dart';
+import 'statistic.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage();
@@ -137,18 +136,8 @@ class _ProfilePageState extends State<ProfilePage> {
       future: _delayMinuteFuture,
       builder: (context, snapshot) {
         if (snapshot.data == null) {
-          return SizedBox(
-            child: Shimmer.fromColors(
-              baseColor: Colors.red,
-              highlightColor: Colors.yellow,
-              child: Text(
-                'Loading from data',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+          return const Center(
+            child: CircularProgressIndicator(),
           );
         } else {
           _delayMinute = snapshot.data;

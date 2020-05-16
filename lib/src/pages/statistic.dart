@@ -1,20 +1,15 @@
+import 'package:code_faster/code_faster.dart' hide DateSupport;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/obj/data_for_hour.dart';
-import 'package:make_sleep_better/src/pages/statistic_detail.dart';
-import 'package:make_sleep_better/src/widgets/line_chart.dart';
 import 'package:make_sleep_better/src/widgets/list_statistic_dialog_content.dart';
 import 'package:make_sleep_better/src/widgets/statistic_by_time.dart';
 import 'package:make_sleep_better/src/widgets/tile_counter.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:code_faster/code_faster.dart' hide DateSupport;
 
 import '../obj/data.dart';
-import 'delay_animation.dart';
 import '../supports/dates.dart';
 import '../supports/file_store.dart';
 import '../supports/logs.dart';
-import '../supports/sizes.dart';
+import 'delay_animation.dart';
 
 class StatisticPage extends StatefulWidget {
   const StatisticPage();
@@ -103,18 +98,8 @@ class _StatisticPageState extends State<StatisticPage> {
           future: _listDataWakeUpFuture,
           builder: (context, snapshot) {
             if (snapshot.data == null) {
-              return SizedBox(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.red,
-                  highlightColor: Colors.yellow,
-                  child: const Text(
-                    'Loading from data...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              return const Center(
+                child: CircularProgressIndicator(),
               );
             } else {
               return DelayedAnimation(
@@ -202,12 +187,9 @@ class _StatisticPageState extends State<StatisticPage> {
       future: _listDataWakeUpFuture,
       builder: (context, snapshot) {
         if (snapshot.data == null) {
-          return Shimmer.fromColors(
-              baseColor: Colors.red,
-              highlightColor: Colors.yellow,
-              child: const Center(
-                child: Text('Loading data ...'),
-              ));
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         } else {
           return StatisticByTime(
               type: 0, height: height, listData: snapshot.data);

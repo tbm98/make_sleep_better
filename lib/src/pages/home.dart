@@ -1,20 +1,20 @@
+import 'dart:io' show Platform;
+
 import 'package:android_intent/android_intent.dart';
+import 'package:code_faster/code_faster.dart' hide DateSupport;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:code_faster/code_faster.dart' hide DateSupport;
 
+import '../obj/time_wake_up.dart';
+import '../providers/main.dart';
+import '../supports/dates.dart';
 import '../supports/logs.dart';
+import '../supports/prefs.dart';
+import '../supports/sizes.dart';
 import 'delay_animation.dart';
 import 'info.dart';
-import '../supports/prefs.dart';
-import '../providers/main.dart';
-import '../obj/time_wake_up.dart';
 import 'profile.dart';
-import '../supports/dates.dart';
-import '../supports/sizes.dart';
-import 'dart:io' show Platform;
 
 class HomePage extends StatefulWidget {
   @override
@@ -251,19 +251,8 @@ class _HomePageState extends State<HomePage> {
         future: _delayMinuteFuture,
         builder: (context, snapshot) {
           if (snapshot.data == null) {
-            return Center(
-              child: Shimmer.fromColors(
-                baseColor: Colors.red,
-                highlightColor: Colors.yellow,
-                child: const Text(
-                  'Loading from data',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           } else {
             _delayMinute = snapshot.data;
