@@ -1,4 +1,4 @@
-# make_sleep_better 
+# make_sleep_better
 ![build and test app](https://github.com/tbm98/make_sleep_better/workflows/build%20and%20test%20app/badge.svg)
 
 A new Flutter application create by tbm98.
