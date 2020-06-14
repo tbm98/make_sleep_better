@@ -1,13 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/supports/notifications.dart';
-import 'package:make_sleep_better/src/supports/prefs.dart';
-import '../supports/file_store.dart';
-import '../supports/strings.dart';
+import 'package:make_sleep_better/src/notifiers/main_state.dart';
+import 'package:state_notifier/state_notifier.dart';
 
-class MainProvider extends ChangeNotifier {
-  MainProvider() {
+import '../helpers/notifications.dart';
+import '../helpers/strings.dart';
+import '../model/database/local/file_store.dart';
+import '../model/database/local/prefs.dart';
+
+class MainNotifier extends StateNotifier<MainState> {
+  MainNotifier() : super(const MainState()) {
     _fileStore = const FileStore();
     _prefsSupport = PrefsSupport();
     _initLoad();
@@ -15,19 +18,15 @@ class MainProvider extends ChangeNotifier {
 
   PrefsSupport _prefsSupport;
   FileStore _fileStore;
-  bool _darkMode = false;
-
-  bool get darkMode => _darkMode;
 
   void _initLoad() async {
-    _darkMode = await _prefsSupport.getDarkMode();
-    notifyListeners();
+    final darkMode = await _prefsSupport.getDarkMode();
+    state = MainState(darkMode: darkMode);
   }
 
   void switchBrightnessMode() async {
-    _darkMode = !_darkMode;
-    await _prefsSupport.saveDarkMode(_darkMode);
-    notifyListeners();
+    state = state.toggle();
+    await _prefsSupport.saveDarkMode(state.darkMode);
   }
 
   Color getColorOfCycle(int cycle) {
@@ -45,8 +44,8 @@ class MainProvider extends ChangeNotifier {
   }
 
   String getSuggest(int cycle, int delayMinute) {
-    return '${Strings.suggest_cycle[cycle - 1]} - '
-        '${Strings.time_cycle[cycle - 1]} + ${delayMinute}p';
+    return '${Strings.suggestCycle[cycle - 1]} - '
+        '${Strings.timeCycle[cycle - 1]} + ${delayMinute}p';
   }
 
   Future<File> addData(

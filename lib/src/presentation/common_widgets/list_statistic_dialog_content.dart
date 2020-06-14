@@ -1,6 +1,7 @@
-import 'package:code_faster/code_faster.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/obj/data.dart';
+import 'package:lazy_code/lazy_code.dart';
+
+import '../../model/entities/data.dart';
 
 class ListStatisticDialogContent extends StatelessWidget {
   ListStatisticDialogContent(
@@ -41,8 +42,8 @@ class ListStatisticDialogContent extends StatelessWidget {
                         title: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8),
                               child: Icon(Icons.access_alarm),
                             ),
                             Text(
@@ -56,9 +57,8 @@ class ListStatisticDialogContent extends StatelessWidget {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 8, bottom: 4),
+                                const Padding(
+                                  padding: EdgeInsets.only(right: 8, bottom: 4),
                                   child:
                                       Icon(Icons.airline_seat_individual_suite),
                                 ),

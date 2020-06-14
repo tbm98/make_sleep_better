@@ -1,13 +1,12 @@
-import 'package:code_faster/code_faster.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/obj/data.dart';
-import 'package:make_sleep_better/src/theme.dart';
-import 'package:make_sleep_better/src/widgets/statistic_by_time.dart';
+import 'package:lazy_code/lazy_code.dart';
 
-import 'delay_animation.dart';
+import '../../model/entities/data.dart';
+import '../../theme.dart';
+import '../common_widgets/statistic_by_time.dart';
 
 class StatisticDetailPage extends StatelessWidget {
-  StatisticDetailPage(this.timeSleep, this.count, this.listData);
+  const StatisticDetailPage(this.timeSleep, this.count, this.listData);
 
   final int timeSleep;
   final int count;

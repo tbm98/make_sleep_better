@@ -5,10 +5,12 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:make_sleep_better/main.dart';
-import 'package:make_sleep_better/src/providers/main.dart';
-import 'package:make_sleep_better/src/supports/prefs.dart';
+import 'package:make_sleep_better/src/model/database/local/prefs.dart';
+import 'package:make_sleep_better/src/notifiers/main.dart';
+import 'package:make_sleep_better/src/notifiers/main_state.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -48,8 +50,8 @@ void main() {
       Provider<PrefsSupport>(
         create: (_) => PrefsSupport(),
       ),
-      ChangeNotifierProvider(
-        create: (_) => MainProvider(),
+      StateNotifierProvider<MainNotifier, MainState>(
+        create: (_) => MainNotifier(),
       )
     ], child: MyApp()));
   });

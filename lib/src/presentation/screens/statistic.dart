@@ -1,15 +1,15 @@
-import 'package:code_faster/code_faster.dart' hide DateSupport;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/widgets/list_statistic_dialog_content.dart';
-import 'package:make_sleep_better/src/widgets/statistic_by_time.dart';
-import 'package:make_sleep_better/src/widgets/tile_counter.dart';
+import 'package:lazy_code/lazy_code.dart' hide DateSupport;
 
-import '../obj/data.dart';
-import '../supports/dates.dart';
-import '../supports/file_store.dart';
-import '../supports/logs.dart';
-import 'delay_animation.dart';
+import '../../helpers/dates.dart';
+import '../../model/database/local/file_store.dart';
+import '../../helpers/logs.dart';
+import '../../model/entities/data.dart';
+import '../common_widgets/delay_animation.dart';
+import '../common_widgets/list_statistic_dialog_content.dart';
+import '../common_widgets/statistic_by_time.dart';
+import '../common_widgets/tile_counter.dart';
 
 class StatisticPage extends StatefulWidget {
   const StatisticPage();

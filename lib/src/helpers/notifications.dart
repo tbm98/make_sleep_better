@@ -2,8 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:make_sleep_better/src/supports/logs.dart';
-import '../pages/profile.dart';
+
+import '../presentation/screens/profile.dart';
+import 'logs.dart';
 
 class NotificationSupport {
   NotificationSupport._(BuildContext context) {
@@ -32,12 +33,12 @@ class NotificationSupport {
   }
 
   void addNotifiSchedule(DateTime timeWakeup, Duration timeForSleep) async {
-    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'make_sleep_better_id',
         'make_sleep_better_name',
         'make_sleep_better_description');
-    final iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    final NotificationDetails platformChannelSpecifics = NotificationDetails(
+    const iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     try {
       await flutterLocalNotificationsPlugin.schedule(

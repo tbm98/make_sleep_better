@@ -1,18 +1,19 @@
 import 'dart:io' show Platform;
 
 import 'package:android_intent/android_intent.dart';
-import 'package:code_faster/code_faster.dart' hide DateSupport;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lazy_code/lazy_code.dart' hide DateSupport;
+import 'package:make_sleep_better/src/notifiers/main_state.dart';
 import 'package:provider/provider.dart';
 
-import '../obj/time_wake_up.dart';
-import '../providers/main.dart';
-import '../supports/dates.dart';
-import '../supports/logs.dart';
-import '../supports/prefs.dart';
-import '../supports/sizes.dart';
-import 'delay_animation.dart';
+import '../../helpers/dates.dart';
+import '../../helpers/logs.dart';
+import '../../model/database/local/prefs.dart';
+import '../../helpers/sizes.dart';
+import '../../model/entities/time_wake_up.dart';
+import '../../notifiers/main.dart';
+import '../common_widgets/delay_animation.dart';
 import 'info.dart';
 import 'profile.dart';
 
@@ -27,8 +28,8 @@ class _HomePageState extends State<HomePage> {
   DateTime _timeSleep;
   List<TimeWakeUp> _timeWakeUp;
 
-  MainProvider get _mainProvider =>
-      Provider.of<MainProvider>(context, listen: false);
+  MainNotifier get _mainProvider =>
+      Provider.of<MainNotifier>(context, listen: false);
 
   DateTime _now = DateTime.now();
   TimeOfDay _timeOfDay = TimeOfDay.now();
@@ -80,17 +81,17 @@ class _HomePageState extends State<HomePage> {
 
   Widget _leadingAppbar() {
     return IconButton(
-      icon: Consumer<MainProvider>(
-        builder: (_, provider, __) {
-          if (provider.darkMode) {
-            return Icon(Icons.brightness_3);
+      icon: Consumer<MainState>(
+        builder: (_, state, __) {
+          if (state.darkMode) {
+            return const Icon(Icons.brightness_3);
           } else {
-            return Icon(Icons.brightness_4);
+            return const Icon(Icons.brightness_4);
           }
         },
       ),
       onPressed: () {
-        Provider.of<MainProvider>(context, listen: false)
+        Provider.of<MainNotifier>(context, listen: false)
             .switchBrightnessMode();
       },
     );
@@ -99,13 +100,13 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _actionAppbars() {
     return [
       IconButton(
-        icon: Icon(Icons.info),
+        icon: const Icon(Icons.info),
         onPressed: () {
           context.push((_) => const InfoPage());
         },
       ),
       IconButton(
-        icon: Icon(Icons.account_circle),
+        icon: const Icon(Icons.account_circle),
         onPressed: () async {
           await context.push((_) => const ProfilePage());
           setState(() {
@@ -155,7 +156,7 @@ class _HomePageState extends State<HomePage> {
         child: FittedBox(
           child: Text(
             _dateSupport.formatTime(_timeOfDay),
-            style: TextStyle(color: Colors.blue),
+            style: const TextStyle(color: Colors.blue),
           ),
         ),
       ),
@@ -206,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
               const Spacer(),
               IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.history,
                   color: Colors.blue,
                   size: 36,
@@ -315,7 +316,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text(
+                child: const Text(
                   'Cancel',
                   style: TextStyle(color: Colors.red),
                 ),
@@ -324,7 +325,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   _handleWhenConfirmSelected(timeWakeup, cycle);
                 },
-                child: Text(
+                child: const Text(
                   'Yes',
                   style: TextStyle(color: Colors.green),
                 ),

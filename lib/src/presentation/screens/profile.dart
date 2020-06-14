@@ -1,14 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:make_sleep_better/src/notifiers/main_state.dart';
 import 'package:provider/provider.dart';
 
-import '../obj/data.dart';
-import '../providers/main.dart';
-import '../supports/dates.dart';
-import '../supports/file_store.dart';
-import '../supports/prefs.dart';
-import 'delay_animation.dart';
+import '../../helpers/dates.dart';
+import '../../model/database/local/file_store.dart';
+import '../../model/database/local/prefs.dart';
+import '../../model/entities/data.dart';
+import '../../notifiers/main.dart';
+import '../common_widgets/delay_animation.dart';
 import 'feedback.dart';
 import 'statistic.dart';
 
@@ -72,17 +73,17 @@ class _ProfilePageState extends State<ProfilePage> {
           centerTitle: true,
           actions: <Widget>[
             IconButton(
-              icon: Consumer<MainProvider>(
-                builder: (_, provider, __) {
-                  if (provider.darkMode) {
-                    return Icon(Icons.brightness_3);
+              icon: Consumer<MainState>(
+                builder: (_, state, __) {
+                  if (state.darkMode) {
+                    return const Icon(Icons.brightness_3);
                   } else {
-                    return Icon(Icons.brightness_4);
+                    return const Icon(Icons.brightness_4);
                   }
                 },
               ),
               onPressed: () {
-                Provider.of<MainProvider>(context, listen: false)
+                Provider.of<MainNotifier>(context, listen: false)
                     .switchBrightnessMode();
               },
             )
@@ -95,11 +96,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOutQuart);
           },
-          items: [
+          items: const [
             BottomNavigationBarItem(
-                icon: Icon(Icons.snooze), title: const Text('Not yet rated')),
+                icon: Icon(Icons.snooze), title: Text('Not yet rated')),
             BottomNavigationBarItem(
-                icon: Icon(Icons.assessment), title: const Text('Statistical'))
+                icon: Icon(Icons.assessment), title: Text('Statistical'))
           ],
         ),
         body: SizedBox.expand(

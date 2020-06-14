@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:code_faster/code_faster.dart';
 import 'package:flutter/material.dart';
+import 'package:lazy_code/lazy_code.dart';
 
-import '../obj/data_for_hour.dart';
+import '../../model/entities/data_for_hour.dart';
 
 class LineChart extends StatelessWidget {
   const LineChart(this._maxHeight, this.data);

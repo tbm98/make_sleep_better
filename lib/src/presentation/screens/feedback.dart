@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'delay_animation.dart';
-import '../obj/data.dart';
-import '../supports/dates.dart';
-import '../supports/file_store.dart';
+import '../../helpers/dates.dart';
+import '../../model/database/local/file_store.dart';
+import '../../model/entities/data.dart';
+import '../common_widgets/delay_animation.dart';
 
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage();
@@ -82,8 +82,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
               title: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8, bottom: 8),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8, bottom: 8),
                     child: Icon(Icons.access_alarm),
                   ),
                   Text(
@@ -101,8 +101,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8, bottom: 4),
+                      const Padding(
+                        padding: EdgeInsets.only(right: 8, bottom: 4),
                         child: Icon(Icons.airline_seat_individual_suite),
                       ),
                       Text(_dateSupport
@@ -149,9 +149,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 onPressed: () => _rating(4, index),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Icon(Icons.delete_forever, color: Colors.red),
-                    const Text(' My mistake. remove it',
+                    Text(' My mistake. remove it',
                         style: TextStyle(
                             color: Colors.red, fontWeight: FontWeight.bold)),
                   ],
@@ -161,12 +161,12 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 onPressed: () => _rating(1, index),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Icon(
                       Icons.sentiment_dissatisfied,
                       color: Colors.red,
                     ),
-                    const Text(
+                    Text(
                       ' Tired',
                       style: TextStyle(
                           color: Colors.red, fontWeight: FontWeight.bold),
@@ -178,12 +178,12 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 onPressed: () => _rating(2, index),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Icon(
                       Icons.sentiment_neutral,
                       color: Colors.grey,
                     ),
-                    const Text(' Normal',
+                    Text(' Normal',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.grey)),
                   ],
@@ -193,9 +193,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 onPressed: () => _rating(3, index),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Icon(Icons.sentiment_satisfied, color: Colors.blue),
-                    const Text(' Comfortable',
+                    Text(' Comfortable',
                         style: TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold)),
                   ],

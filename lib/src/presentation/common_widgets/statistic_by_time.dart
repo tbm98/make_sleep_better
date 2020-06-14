@@ -1,10 +1,10 @@
-import 'package:code_faster/code_faster.dart';
 import 'package:flutter/material.dart';
-import '../obj/data.dart';
-import '../obj/data_for_hour.dart';
-import '../pages/delay_animation.dart';
-import '../pages/statistic_detail.dart';
+import 'package:lazy_code/lazy_code.dart';
 
+import '../../model/entities/data.dart';
+import '../../model/entities/data_for_hour.dart';
+import '../screens/statistic_detail.dart';
+import 'delay_animation.dart';
 import 'line_chart.dart';
 
 class StatisticByTime extends StatelessWidget {
@@ -139,7 +139,7 @@ class StatisticByTime extends StatelessWidget {
             decoration: BoxDecoration(
                 color: Colors.pink,
                 borderRadius: BorderRadius.circular(5),
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                     colors: [Colors.blue, Colors.grey, Colors.red],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter)),
@@ -147,7 +147,7 @@ class StatisticByTime extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
+                children: const <Widget>[
                   RotatedBox(
                     quarterTurns: 1,
                     child: Text(

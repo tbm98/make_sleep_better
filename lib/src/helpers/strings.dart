@@ -1,6 +1,6 @@
 class Strings {
   /// store suggest from 1 to 10 cycle sleep
-  static const List<String> suggest_cycle = [
+  static const List<String> suggestCycle = [
     'Too short',
     'Too short',
     'Short, but ok',
@@ -13,7 +13,7 @@ class Strings {
     'Too long'
   ];
 
-  static const List<String> time_cycle = [
+  static const List<String> timeCycle = [
     '1h30p',
     '3h',
     '4h30p',

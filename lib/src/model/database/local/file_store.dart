@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
-import '../obj/data.dart';
+import '../../entities/data.dart';
 
 class FileStore {
   const FileStore();

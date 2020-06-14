@@ -14,7 +14,7 @@ class _InfoPageState extends State<InfoPage> {
       padding: const EdgeInsets.only(top: 8),
       child: Text(
         value,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
       ),
     );
   }
@@ -28,7 +28,7 @@ class _InfoPageState extends State<InfoPage> {
         padding: const EdgeInsets.only(bottom: 8),
         child: Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.blue, decoration: TextDecoration.underline),
         ),
       ),
@@ -75,8 +75,8 @@ class _InfoPageState extends State<InfoPage> {
               _link('https://www.fb.com/tbminh.98'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text(
+                children: const <Widget>[
+                  Text(
                     'A mobile developer ',
                     textAlign: TextAlign.center,
                   ),
@@ -84,7 +84,7 @@ class _InfoPageState extends State<InfoPage> {
                     Icons.favorite,
                     color: Colors.pink,
                   ),
-                  const Text(
+                  Text(
                     ' flutter.',
                     textAlign: TextAlign.center,
                   ),
