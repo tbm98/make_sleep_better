@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:make_sleep_better/src/notifiers/main_state.dart';
+import 'package:make_sleep_better/src/presentation/screens/feedback/feedback_state_notifier.dart';
 import 'package:provider/provider.dart';
 
 import '../../helpers/dates.dart';
@@ -10,7 +12,8 @@ import '../../model/database/local/prefs.dart';
 import '../../model/entities/data.dart';
 import '../../notifiers/main.dart';
 import '../common_widgets/delay_animation.dart';
-import 'feedback.dart';
+import 'feedback/feedback.dart';
+import 'feedback/feedback_state.dart';
 import 'statistic.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -229,9 +232,14 @@ class _ProfilePageState extends State<ProfilePage> {
           _indexPage = index;
         });
       },
-      children: const <Widget>[
-        FeedbackPage(),
-        StatisticPage(),
+      children: <Widget>[
+        StateNotifierProvider<FeedbackStateNotifier, FeedbackState>(
+            create: (_) => FeedbackStateNotifier(),
+            builder: (_, child) {
+              return child;
+            },
+            child: const FeedbackPage()),
+        const StatisticPage(),
       ],
     );
   }

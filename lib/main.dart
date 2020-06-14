@@ -9,9 +9,7 @@ import 'src/notifiers/main_state.dart';
 import 'src/presentation/screens/home.dart';
 
 void main() => runApp(MultiProvider(providers: [
-      Provider<PrefsSupport>(
-        create: (_) => PrefsSupport(),
-      ),
+      Provider<PrefsSupport>(create: (_) => PrefsSupport()),
       StateNotifierProvider<MainNotifier, MainState>(
         create: (_) => MainNotifier(),
       )
