@@ -8,6 +8,9 @@ part of 'feedback_state.dart';
 // **************************************************************************
 
 T _$identity<T>(T value) => value;
+FeedbackState _$FeedbackStateFromJson(Map<String, dynamic> json) {
+  return _FeedbackState.fromJson(json);
+}
 
 class _$FeedbackStateTearOff {
   const _$FeedbackStateTearOff();
@@ -25,6 +28,7 @@ const $FeedbackState = _$FeedbackStateTearOff();
 mixin _$FeedbackState {
   List<Data> get listDataWakeUp;
 
+  Map<String, dynamic> toJson();
   $FeedbackStateCopyWith<FeedbackState> get copyWith;
 }
 
@@ -86,8 +90,12 @@ class __$FeedbackStateCopyWithImpl<$Res>
   }
 }
 
+@JsonSerializable()
 class _$_FeedbackState with DiagnosticableTreeMixin implements _FeedbackState {
   const _$_FeedbackState({this.listDataWakeUp});
+
+  factory _$_FeedbackState.fromJson(Map<String, dynamic> json) =>
+      _$_$_FeedbackStateFromJson(json);
 
   @override
   final List<Data> listDataWakeUp;
@@ -122,10 +130,18 @@ class _$_FeedbackState with DiagnosticableTreeMixin implements _FeedbackState {
   @override
   _$FeedbackStateCopyWith<_FeedbackState> get copyWith =>
       __$FeedbackStateCopyWithImpl<_FeedbackState>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$_$_FeedbackStateToJson(this);
+  }
 }
 
 abstract class _FeedbackState implements FeedbackState {
   const factory _FeedbackState({List<Data> listDataWakeUp}) = _$_FeedbackState;
+
+  factory _FeedbackState.fromJson(Map<String, dynamic> json) =
+      _$_FeedbackState.fromJson;
 
   @override
   List<Data> get listDataWakeUp;

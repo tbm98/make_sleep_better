@@ -24,8 +24,10 @@ class FeedbackStateNotifier extends StateNotifier<FeedbackState>
   Future<List<Data>> _getListWakeUpNotYetRated() async {
     final String readFromFile = await _fileStore.readData();
     final listDataFromFile = jsonDecode(readFromFile) as List;
-    final listDataWakeUp = listDataFromFile.map((e) => Data.fromMap(e)).toList()
-      ..removeWhere((element) => element.feedback);
+    final listDataWakeUp = listDataFromFile
+        .map((e) => Data.fromJson(e))
+        .toList()
+          ..removeWhere((element) => element.feedback);
     return listDataWakeUp ?? [];
   }
 

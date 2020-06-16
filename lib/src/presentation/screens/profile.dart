@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final String readFromFile = await _fileStore.readData();
     final listDataFromFile = jsonDecode(readFromFile) as List;
     final _listDataWakeUp = listDataFromFile
-        .map((e) => Data.fromMap(e))
+        .map((e) => Data.fromJson(e))
         .toList()
           ..removeWhere((element) => element.feedback);
     if (_listDataWakeUp.isEmpty) {

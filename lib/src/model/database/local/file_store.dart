@@ -55,7 +55,7 @@ class FileStore {
     //if not empty, must read data=>convert to listdata=>add new data
     // =>encode to json=> write to filestore
     final listDataFromFile = jsonDecode(readDataFromFile) as List;
-    return listDataFromFile.map((e) => Data.fromMap(e)).toList();
+    return listDataFromFile.map((e) => Data.fromJson(e)).toList();
   }
 
   Future<File> addData(
@@ -76,7 +76,7 @@ class FileStore {
       // =>encode to json=> write to filestore
 
       final listDataFromFile = jsonDecode(readDataFromFile) as List;
-      listData = listDataFromFile.map((e) => Data.fromMap(e)).toList()
+      listData = listDataFromFile.map((e) => Data.fromJson(e)).toList()
         ..add(data);
 //      print(listData);
     }

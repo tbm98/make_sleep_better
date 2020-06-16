@@ -1,3 +1,8 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'data.g.dart';
+
+@JsonSerializable()
 class Data {
   Data(
       {this.timeSleep,
@@ -6,18 +11,10 @@ class Data {
       this.feedback,
       this.level});
 
-  factory Data.fromMap(Map<String, dynamic> map) {
-    return Data(
-      timeSleep: DateTime.tryParse(map['timeSleep'] ?? ''),
-      timeWakeUp: DateTime.tryParse(map['timeWakeUp'] ?? ''),
-      cycleSleep: map['cycleSleep'] as int,
-      feedback: map['feedback'] as bool,
-      level: map['level'] as int,
-    );
-  }
-
   int get id => timeWakeUp.millisecondsSinceEpoch;
+  @JsonKey(defaultValue: '')
   DateTime timeSleep;
+  @JsonKey(defaultValue: '')
   DateTime timeWakeUp;
   int cycleSleep;
   bool feedback;
@@ -28,13 +25,7 @@ class Data {
   ///lebel 3: thoải mái, vui vẻ
   int level;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'timeSleep': timeSleep.toString(),
-      'timeWakeUp': timeWakeUp.toString(),
-      'cycleSleep': cycleSleep,
-      'feedback': feedback,
-      'level': level,
-    };
-  }
+  factory Data.fromJson(Map<String, dynamic> json) => _$DataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DataToJson(this);
 }

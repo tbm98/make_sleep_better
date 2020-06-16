@@ -21,6 +21,11 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!context.watch<FeedbackStateNotifier>().hasListeners) {
+      context.watch<FeedbackStateNotifier>().addListener((state) {
+        print(state.listDataWakeUp);
+      });
+    }
     return Consumer<FeedbackState>(
       builder: (_, state, child) {
         if (state.listDataWakeUp == null) {
