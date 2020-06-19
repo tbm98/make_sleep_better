@@ -46,13 +46,13 @@ void main() {
 //      expect(e, null);
 //    }
 
-    await tester.pumpWidget(MultiProvider(providers: [
-      Provider<PrefsSupport>(
-        create: (_) => PrefsSupport(),
-      ),
-      StateNotifierProvider<MainStateNotifier, MainState>(
-        create: (_) => MainStateNotifier(),
-      )
-    ], child: MyApp()));
+//    await tester.pumpWidget(MultiProvider(providers: [
+//      Provider<PrefsSupport>(
+//        create: (_) => PrefsSupport(),
+//      ),
+//      StateNotifierProvider<MainStateNotifier, MainState>(
+//        create: (_) => MainStateNotifier(),
+//      )
+//    ], child: MyApp()));
   });
 }
