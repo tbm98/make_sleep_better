@@ -9,7 +9,7 @@ import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:make_sleep_better/main.dart';
 import 'package:make_sleep_better/src/model/database/local/prefs.dart';
-import 'package:make_sleep_better/src/notifiers/main.dart';
+import 'package:make_sleep_better/src/notifiers/main_state_notifier.dart';
 import 'package:make_sleep_better/src/notifiers/main_state.dart';
 import 'package:provider/provider.dart';
 
@@ -50,8 +50,8 @@ void main() {
       Provider<PrefsSupport>(
         create: (_) => PrefsSupport(),
       ),
-      StateNotifierProvider<MainNotifier, MainState>(
-        create: (_) => MainNotifier(),
+      StateNotifierProvider<MainStateNotifier, MainState>(
+        create: (_) => MainStateNotifier(),
       )
     ], child: MyApp()));
   });

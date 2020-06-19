@@ -12,7 +12,7 @@ import '../../helpers/logs.dart';
 import '../../model/database/local/prefs.dart';
 import '../../helpers/sizes.dart';
 import '../../model/entities/time_wake_up.dart';
-import '../../notifiers/main.dart';
+import '../../notifiers/main_state_notifier.dart';
 import '../common_widgets/delay_animation.dart';
 import 'info.dart';
 import 'profile.dart';
@@ -28,8 +28,8 @@ class _HomePageState extends State<HomePage> {
   DateTime _timeSleep;
   List<TimeWakeUp> _timeWakeUp;
 
-  MainNotifier get _mainProvider =>
-      Provider.of<MainNotifier>(context, listen: false);
+  MainStateNotifier get _mainProvider =>
+      Provider.of<MainStateNotifier>(context, listen: false);
 
   DateTime _now = DateTime.now();
   TimeOfDay _timeOfDay = TimeOfDay.now();
@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       onPressed: () {
-        Provider.of<MainNotifier>(context, listen: false)
+        Provider.of<MainStateNotifier>(context, listen: false)
             .switchBrightnessMode();
       },
     );

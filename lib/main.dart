@@ -3,15 +3,17 @@ import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
 
 import 'src/helpers/logs.dart';
+import 'src/model/database/local/file_store.dart';
 import 'src/model/database/local/prefs.dart';
-import 'src/notifiers/main.dart';
+import 'src/notifiers/main_state_notifier.dart';
 import 'src/notifiers/main_state.dart';
 import 'src/presentation/screens/home.dart';
 
 void main() => runApp(MultiProvider(providers: [
+      Provider<FileStore>(create: (_) => const FileStore()),
       Provider<PrefsSupport>(create: (_) => PrefsSupport()),
-      StateNotifierProvider<MainNotifier, MainState>(
-        create: (_) => MainNotifier(),
+      StateNotifierProvider<MainStateNotifier, MainState>(
+        create: (_) => MainStateNotifier(),
       )
     ], child: MyApp()));
 

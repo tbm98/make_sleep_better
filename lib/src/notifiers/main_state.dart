@@ -5,8 +5,8 @@ part 'main_state.freezed.dart';
 
 @freezed
 abstract class MainState implements _$MainState {
-  const MainState._();
   const factory MainState({@Default(false) bool darkMode}) = _MainState;
+  const MainState._();
   MainState toggle() {
     return MainState(darkMode: !darkMode);
   }

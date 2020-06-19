@@ -10,7 +10,7 @@ import '../../helpers/dates.dart';
 import '../../model/database/local/file_store.dart';
 import '../../model/database/local/prefs.dart';
 import '../../model/entities/data.dart';
-import '../../notifiers/main.dart';
+import '../../notifiers/main_state_notifier.dart';
 import '../common_widgets/delay_animation.dart';
 import 'feedback/feedback.dart';
 import 'feedback/feedback_state.dart';
@@ -86,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 },
               ),
               onPressed: () {
-                Provider.of<MainNotifier>(context, listen: false)
+                Provider.of<MainStateNotifier>(context, listen: false)
                     .switchBrightnessMode();
               },
             )

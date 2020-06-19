@@ -1,32 +1,34 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:make_sleep_better/src/notifiers/main_state.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 import '../helpers/notifications.dart';
 import '../helpers/strings.dart';
 import '../model/database/local/file_store.dart';
 import '../model/database/local/prefs.dart';
+import 'main_state.dart';
 
-class MainNotifier extends StateNotifier<MainState> {
-  MainNotifier() : super(const MainState()) {
-    _fileStore = const FileStore();
-    _prefsSupport = PrefsSupport();
+class MainStateNotifier extends StateNotifier<MainState> with LocatorMixin {
+  MainStateNotifier() : super(const MainState());
+
+  PrefsSupport get _prefs => read<PrefsSupport>();
+
+  FileStore get _fileStore => read<FileStore>();
+
+  @override
+  void initState() {
     _initLoad();
   }
 
-  PrefsSupport _prefsSupport;
-  FileStore _fileStore;
-
   void _initLoad() async {
-    final darkMode = await _prefsSupport.getDarkMode();
+    final darkMode = await _prefs.getDarkMode();
     state = MainState(darkMode: darkMode);
   }
 
   void switchBrightnessMode() async {
     state = state.toggle();
-    await _prefsSupport.saveDarkMode(state.darkMode);
+    await _prefs.saveDarkMode(state.darkMode);
   }
 
   Color getColorOfCycle(int cycle) {
